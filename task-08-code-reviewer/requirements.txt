@@ -1,0 +1,3 @@
+# Dependency placeholder for Task 8: AI-Assisted Code Review Tool.
+# No runtime dependencies have been selected.
+# Add actual dependencies when implementation begins.

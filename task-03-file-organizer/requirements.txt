@@ -1,0 +1,3 @@
+# Dependency placeholder for Task 3: Automated File Organizer.
+# No runtime dependencies have been selected.
+# Add actual dependencies when implementation begins.

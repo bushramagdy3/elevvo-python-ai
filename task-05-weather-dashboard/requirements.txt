@@ -1,0 +1,3 @@
+# Dependency placeholder for Task 5: Weather Dashboard Using a Public REST API.
+# No runtime dependencies have been selected.
+# Add actual dependencies when implementation begins.

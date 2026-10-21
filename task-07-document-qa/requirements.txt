@@ -1,0 +1,3 @@
+# Dependency placeholder for Task 7: LLM-Powered Document Q&A Tool.
+# No runtime dependencies have been selected.
+# Add actual dependencies when implementation begins.
