@@ -1,6 +1,6 @@
-"""Implementation placeholder for Task 3: Automated File Organizer."""
 import os
 import sys
+from pathlib import Path
 
 def organizeDirectory(target_directory :str):
     '''scans a target directory and automatically sorts files into subfolders based on file extension'''
@@ -40,28 +40,20 @@ def directoryToDict(target_directory :str):
 
         print(f"Reading file {file}")
 
-        extension = file.split('.')[1]
-        
-        content = ''
-        with open(f"{target_directory}\\{file}", "r", encoding='latin-1') as x:
-            content = x.read()
+        extension = file.split('.')[-1]
 
-        os.remove(f"{target_directory}\\{file}")
-
-        file_name_and_content = dict()
-        file_name_and_content["name"] = file
-        file_name_and_content["content"] = content
+        file_name = dict()
 
         if extension in organized_files.keys():
-            organized_files[extension].append(file_name_and_content)
+            organized_files[extension].append(file_name)
         else:
             organized_files[extension] = list()
-            organized_files[extension].append(file_name_and_content)
+            organized_files[extension].append(file_name)
     
     return organized_files
 
 def addToSubfolders(files_dict :dict, target_directory :str):
-    '''adds dictionary items to subfolders in target_directory'''
+    '''Adds dictionary items to subfolders in target_directory'''
     os.chdir(target_directory)
 
     for extension in files_dict.keys():
@@ -70,8 +62,7 @@ def addToSubfolders(files_dict :dict, target_directory :str):
             print(f"Created new folder named {extension}")
             os.makedirs(extension)
 
-        os.chdir(f"{target_directory}\\{extension}")
-
+        os.chdir(f"target_directory\\{extension}")
         for file in files_dict[extension]:
             i = 1
             file_name = file["name"]
@@ -80,9 +71,9 @@ def addToSubfolders(files_dict :dict, target_directory :str):
                 print(f"Found an already existing file with the name {file_name}, renaming the new file...")
                 file_name = original_file_name + f"({i})"
                 i += 1
-            with open(f"{os.curdir}\\{file_name}", "w", encoding='latin-1') as new_file:
-                print(f"Adding {file_name} to the {extension} directory...")
-                new_file.write(file["content"])
+            source_file = Path(f"{target_directory}\\{file_name}")
+            destination_file = Path(f"{target_directory}\\{extension}\\{file_name}")
+            source_file.rename(destination_file)
 
 
 if __name__ == "__main__":
