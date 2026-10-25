@@ -22,3 +22,6 @@ htmlcov/
 .idea/
 .DS_Store
 Thumbs.db
+
+# File organizer runtime log
+/task-03-file-organizer/log.log
