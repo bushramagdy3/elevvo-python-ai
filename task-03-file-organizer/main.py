@@ -1,8 +1,9 @@
 import os
 import sys
 from pathlib import Path
+import logging
 
-def organizeDirectory(target_directory :str):
+def organizeDirectory(target_directory :str, is_dry_run :bool = False ):
     '''scans a target directory and automatically sorts files into subfolders based on file extension'''
     try:
         files_dict = directoryToDict(target_directory)
@@ -13,7 +14,7 @@ def organizeDirectory(target_directory :str):
         sys.exit()
 
     try:
-        addToSubfolders(files_dict, target_directory)
+        addToSubfolders(files_dict, target_directory, is_dry_run)
     except Exception as e:
             print(f"Could not complete file organization in: {target_directory}")
             print(f"Error: {e}")
@@ -53,15 +54,18 @@ def directoryToDict(target_directory :str):
     
     return organized_files
 
-def addToSubfolders(files_dict :dict, target_directory :str):
+def addToSubfolders(files_dict :dict, target_directory :str, is_dry_run :bool = False ):
     '''Adds dictionary items to subfolders in target_directory'''
 
     for extension in files_dict.keys():
         os.chdir(target_directory)
         print(f"Organizing files with extension '.{extension}'...")
         if not (Path(target_directory) / extension).exists():
-            print(f"Creating folder: {Path(target_directory) / extension}")
-            os.makedirs(extension)
+            if is_dry_run:
+                print(f"Would create folder: {Path(target_directory) / extension}")
+            else:
+                print(f"Creating folder: {Path(target_directory) / extension}")
+                os.makedirs(extension)
 
         os.chdir(f"{target_directory}\{extension}")
         for file in files_dict[extension]:
@@ -70,23 +74,40 @@ def addToSubfolders(files_dict :dict, target_directory :str):
             while Path(file_name).exists():
                 print(f"Filename conflict: '{file_name}' already exists in '{Path(target_directory) / extension}'. Choosing a new destination name...")
                 file_name = file + f"({i})"
+                if is_dry_run:
+                    print(f"Would rename {file} to {file_name}")
                 i += 1
+            
             source_file = Path(f"{target_directory}\{file}")
             destination_file = Path(f"{target_directory}\{extension}\{file_name}")
-            source_file.rename(destination_file)
-            print(
-                f"Moved file: {file}\n"
-                f"  Source: {source_file}\n"
-                f"  Destination: {destination_file}"
-            )
+            if is_dry_run:
+                print(
+                        f"Would move file: {file}\n"
+                        f"  Source: {source_file}\n"
+                        f"  Destination: {destination_file}"
+                    )
+            else:
+                source_file.rename(destination_file)
+                print(
+                    f"Moved file: {file}\n"
+                    f"  Source: {source_file}\n"
+                    f"  Destination: {destination_file}"
+                )
 
 
 if __name__ == "__main__":
+
+    logging.basicConfigconfig(level = logging.INFO, filename='log.log', filemode='w')
+
     print("Welcome to Bushra's automated file organizer!")
-    print("Starting file organization...")
+    print("Write the path of your targetted directory")
+    target_directory = input()
+    print("Turn on Dry-run mode? (Y/N)")
+    is_dry_run = input()
+    is_dry_run = True if is_dry_run == 'Y' or 'Yes' else False
 
-    target_directory = "C:\\Users\\bushr\\OneDrive\\Desktop\\testing"
+    print("Starting...")
 
-    organizeDirectory(target_directory)
+    organizeDirectory(target_directory, is_dry_run )
 
     print("File organization completed successfully.")
