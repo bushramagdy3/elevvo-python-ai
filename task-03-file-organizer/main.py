@@ -7,7 +7,7 @@ def organizeDirectory(target_directory :str):
     try:
         files_dict = directoryToDict(target_directory)
     except Exception as e:
-        print("An unexpected error occured while reading the files, please try again")
+        print(f"Could not scan directory: {target_directory}")
         print(f"Error: {e}")
         print("Exiting...")
         sys.exit()
@@ -15,7 +15,7 @@ def organizeDirectory(target_directory :str):
     try:
         addToSubfolders(files_dict, target_directory)
     except Exception as e:
-            print("An unexpected error occured while writing the files, please try again")
+            print(f"Could not complete file organization in: {target_directory}")
             print(f"Error: {e}")
             print("Exiting...")
             sys.exit()
@@ -23,12 +23,12 @@ def organizeDirectory(target_directory :str):
 def directoryToDict(target_directory :str):
     '''Takes a directory and returns a dictionary with files organized based on extentsion'''
 
-    print("Reading directory...")
+    print(f"Scanning directory: {target_directory}")
 
     try:
         files = os.listdir(target_directory)
     except FileNotFoundError:
-        print("Directory not found, please enter a valid one")
+        print(f"Directory not found: {target_directory}. Check the path and try again.")
         print("Exiting...")
         sys.exit()
     
@@ -38,7 +38,7 @@ def directoryToDict(target_directory :str):
         if '.' not in file:
             continue
 
-        print(f"Reading file {file}")
+        print(f"Found file: {file}")
 
         extension = file.split('.')[-1]
 
@@ -55,9 +55,9 @@ def addToSubfolders(files_dict :dict, target_directory :str):
 
     for extension in files_dict.keys():
         os.chdir(target_directory)
-        print(f"Organizing .{extension} files...")
+        print(f"Organizing files with extension '.{extension}'...")
         if extension not in os.listdir(target_directory):
-            print(f"Created new folder named {extension}")
+            print(f"Creating folder: {Path(target_directory) / extension}")
             os.makedirs(extension)
 
         os.chdir(f"{target_directory}\{extension}")
@@ -65,20 +65,25 @@ def addToSubfolders(files_dict :dict, target_directory :str):
             i = 1
             file_name = file
             while file_name in os.listdir():
-                print(f"Found an already existing file with the name {file_name}, renaming the new file...")
+                print(f"Filename conflict: '{file_name}' already exists in '{Path(target_directory) / extension}'. Choosing a new destination name...")
                 file_name = file + f"({i})"
                 i += 1
             source_file = Path(f"{target_directory}\{file}")
             destination_file = Path(f"{target_directory}\{extension}\{file_name}")
             source_file.rename(destination_file)
+            print(
+                f"Moved file: {file}\n"
+                f"  Source: {source_file}\n"
+                f"  Destination: {destination_file}"
+            )
 
 
 if __name__ == "__main__":
     print("Welcome to Bushra's automated file organizer!")
-    print("Please enter the path of the directory you'd like to organize:")
+    print("Starting file organization...")
 
     target_directory = "C:\\Users\\bushr\\OneDrive\\Desktop\\testing"
 
     organizeDirectory(target_directory)
 
-    print("Organization Successful!")
+    print("File organization completed successfully.")
