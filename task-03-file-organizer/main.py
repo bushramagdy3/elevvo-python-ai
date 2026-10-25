@@ -42,37 +42,34 @@ def directoryToDict(target_directory :str):
 
         extension = file.split('.')[-1]
 
-        file_name = dict()
-
         if extension in organized_files.keys():
-            organized_files[extension].append(file_name)
+            organized_files[extension].append(file)
         else:
             organized_files[extension] = list()
-            organized_files[extension].append(file_name)
+            organized_files[extension].append(file)
     
     return organized_files
 
 def addToSubfolders(files_dict :dict, target_directory :str):
     '''Adds dictionary items to subfolders in target_directory'''
-    os.chdir(target_directory)
 
     for extension in files_dict.keys():
+        os.chdir(target_directory)
         print(f"Organizing .{extension} files...")
         if extension not in os.listdir(target_directory):
             print(f"Created new folder named {extension}")
             os.makedirs(extension)
 
-        os.chdir(f"target_directory\\{extension}")
+        os.chdir(f"{target_directory}\{extension}")
         for file in files_dict[extension]:
             i = 1
-            file_name = file["name"]
-            original_file_name = file["name"]
+            file_name = file
             while file_name in os.listdir():
                 print(f"Found an already existing file with the name {file_name}, renaming the new file...")
-                file_name = original_file_name + f"({i})"
+                file_name = file + f"({i})"
                 i += 1
-            source_file = Path(f"{target_directory}\\{file_name}")
-            destination_file = Path(f"{target_directory}\\{extension}\\{file_name}")
+            source_file = Path(f"{target_directory}\{file}")
+            destination_file = Path(f"{target_directory}\{extension}\{file_name}")
             source_file.rename(destination_file)
 
 
