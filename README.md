@@ -1,27 +1,29 @@
 # Elevvo Python Programming & AI
 
-A collection of Python automation and AI projects planned for the Elevvo Python Programming & AI internship. The selected projects cover file organization, weather API integration, document question answering, AI-assisted code review, and a two-tool AI agent. Each task folder contains its own documentation and setup instructions.
+A collection of Python automation and AI projects being developed for the Elevvo Python Programming & AI internship. The selected projects cover file organization, weather API integration, document question answering, AI-assisted code review, and a two-tool AI agent. Each task folder contains its own documentation and setup instructions.
 
 ## Projects
 
 | Task | Project | Level | Status | Demo |
 | --- | --- | --- | --- | --- |
-| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Planned | Not recorded yet |
+| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | Not recorded yet |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Planned | Not recorded yet |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Planned | Not recorded yet |
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Planned | Not recorded yet |
 | 9 | [AI Agent for a Two-Tool Task](task-09-two-tool-agent/) | Industry Level | Planned | Not recorded yet |
 
+Task 3's core requirements are complete, and the file-logging bonus is implemented. The optional dry-run bonus remains [partially implemented](task-03-file-organizer/README.md#bonuses-and-additional-features). The other four projects contain planning documentation and implementation placeholders.
+
 ## Getting started
 
-Clone the repository and choose a task:
+Clone the repository:
 
 ```sh
 git clone https://github.com/bushramagdy3/elevvo-python-ai.git
 cd elevvo-python-ai
 ```
 
-Follow the setup instructions for the project you want to work on:
+Choose a task and follow its setup instructions:
 
 - [Task 3: Automated File Organizer](task-03-file-organizer/README.md#setup)
 - [Task 5: Weather Dashboard Using a Public REST API](task-05-weather-dashboard/README.md#setup)
@@ -29,12 +31,12 @@ Follow the setup instructions for the project you want to work on:
 - [Task 8: AI-Assisted Code Review Tool](task-08-code-reviewer/README.md#setup)
 - [Task 9: AI Agent for a Two-Tool Task](task-09-two-tool-agent/README.md#setup)
 
-Each task currently contains a README, a Python entry placeholder, and a dependency placeholder. The entry placeholders report that implementation is unavailable. Dependencies and application configuration have not been selected.
+Task 3 currently targets Windows and uses Python's standard library. Run each project from its own folder; there is no shared application launcher.
 
 ## Documentation and demos
 
-Each task README contains requirements coverage, setup, usage, demo, tests, and limitations sections, currently marked with their planning status. The official task PDF is not included, so requirements mappings need verification. Demo recordings are not available yet. See [README_GUIDE.md](README_GUIDE.md) for the repository's documentation conventions.
+Each task README covers requirements, bonuses, setup, usage, demos, tests, and limitations. Task 3 documents the current implementation and verified results; the remaining READMEs describe planned work. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
 
 ## Author
 
-Bushra Magdy
+Bushra Magdy — [GitHub](https://github.com/bushramagdy3).

@@ -54,22 +54,28 @@ def directoryToDict(target_directory :str):
 
 def addToSubfolders(files_dict :dict, target_directory :str, is_dry_run :bool = False ):
     '''Adds dictionary items to subfolders in target_directory'''
-
+    
     for extension in files_dict.keys():
         os.chdir(target_directory)
         logging.info("Organizing files with extension '%s'...", extension)
+
+        flag = False
+
         if not (Path(target_directory) / extension).exists():
+            flag = True
             if is_dry_run:
                 logging.info("[DRY RUN] Would create folder: %s", Path(target_directory) / extension)
             else:
                 logging.info("Creating folder: %s", Path(target_directory) / extension)
                 os.makedirs(extension)
+        
+        if not flag:
+            os.chdir(f"{target_directory}\{extension}")
 
-        os.chdir(f"{target_directory}\{extension}")
         for file in files_dict[extension]:
             i = 1
             file_name = file
-            while Path(file_name).exists():
+            while not flag and Path(file_name).exists():
                 logging.warning("Filename conflict: '%s' already exists in '%s'. Choosing a new destination name...", file_name, Path(target_directory) / extension)
                 file_name = file + f"({i})"
                 if is_dry_run:
@@ -105,7 +111,7 @@ if __name__ == "__main__":
     target_directory = input()
     print("Turn on Dry-run mode? (Y/N)")
     is_dry_run = input()
-    is_dry_run = True if is_dry_run == 'Y' or 'Yes' else False
+    is_dry_run = True if is_dry_run == 'Y' else False
 
     logging.info("Starting file organization (dry_run=%s).", is_dry_run)
 
