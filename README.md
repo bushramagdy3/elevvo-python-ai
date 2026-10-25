@@ -12,7 +12,7 @@ A collection of Python automation and AI projects being developed for the Elevvo
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Planned | Not recorded yet |
 | 9 | [AI Agent for a Two-Tool Task](task-09-two-tool-agent/) | Industry Level | Planned | Not recorded yet |
 
-Task 3's core requirements are complete, and the file-logging bonus is implemented. The optional dry-run bonus remains [partially implemented](task-03-file-organizer/README.md#bonuses-and-additional-features). The other four projects contain planning documentation and implementation placeholders.
+Task 3's core requirements and its [file-logging and dry-run bonuses](task-03-file-organizer/README.md#bonuses-and-additional-features) are complete. The other four projects contain planning documentation and implementation placeholders.
 
 ## Getting started
 

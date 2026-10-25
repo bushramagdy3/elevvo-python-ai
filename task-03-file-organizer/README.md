@@ -2,9 +2,9 @@
 
 **Level:** Level 2
 
-**Status:** Complete (core requirements)
+**Status:** Complete
 
-A Windows command-line tool for grouping files into extension-based subfolders while preserving existing destination files. It prompts for a directory and dry-run choice, and records operations and errors in a log file; the optional dry-run bonus remains partially implemented.
+A Windows command-line tool for grouping files into extension-based subfolders while preserving existing destination files. It prompts for a directory and dry-run choice, previews changes without moving files when requested, and records operations and errors in a log file.
 
 ## Requirements coverage
 
@@ -13,8 +13,8 @@ This mapping follows the supplied Task 3 brief image. The original task PDF is n
 | Required feature | Implementation | Status |
 | --- | --- | --- |
 | Scan a target directory and sort files into subfolders by extension | [directoryToDict](main.py#L22) groups top-level files; [addToSubfolders](main.py#L55) moves them. Answer `N` at the interactive prompt to use normal move mode. | Complete |
-| Never overwrite an existing destination file; rename the incoming file on conflict | [Destination checks and renaming](main.py#L69) select names such as `notes.txt(1)`, leaving existing files intact. Verified on Windows in direct move-mode checks. | Complete |
-| Report each move with filename, source, and destination | [Move summaries](main.py#L79) record all three fields in `log.log`. The file-logging bonus replaces console operation messages; input prompts remain in the console. | Complete |
+| Never overwrite an existing destination file; rename the incoming file on conflict | [Destination checks and renaming](main.py#L75) select names such as `notes.txt(1)`, leaving existing files intact. Verified on Windows through direct function calls and the CLI. | Complete |
+| Report each move with filename, source, and destination | [Move summaries](main.py#L85) record all three fields in `log.log`. The file-logging bonus replaces console operation messages; input prompts remain in the console. | Complete |
 | Handle duplicate filenames, missing permissions, and empty folders gracefully | [Error handling](main.py#L6) logs failures and stops the run. Direct function checks covered conflicts, empty folders, missing paths, and simulated permission errors. | Complete |
 
 ## Bonuses and additional features
@@ -22,7 +22,7 @@ This mapping follows the supplied Task 3 brief image. The original task PDF is n
 Official bonus features:
 
 - **File logging — Complete.** Uses Python's `logging` module with `INFO`, `WARNING`, and `ERROR` entries in a UTF-8 log file.
-- **Dry-run mode — Partial.** Answer `Y` to log planned moves and conflict renames without moving files when destination folders already exist. A preview currently stops if a destination folder is missing.
+- **Dry-run mode — Complete.** Answer `Y` to log planned folder creation, moves, and conflict renames without creating folders or moving files. Verified with missing, empty, and populated destination folders, including multiple filename conflicts.
 
 The brief's **Reading ahead** suggestion to schedule runs with cron or Windows Task Scheduler is not implemented.
 
@@ -64,7 +64,7 @@ python main.py
 
 Enter an **absolute Windows directory path** when prompted.
 
-Answer uppercase `Y` to preview changes or `N` to move files. Only uppercase `Y` enables dry-run; all other answers select normal move mode. Previewing currently requires destination folders to exist already.
+Answer uppercase `Y` to preview changes or `N` to move files. Only uppercase `Y` enables dry-run; all other answers select normal move mode.
 
 For a disposable example, create a sample directory with an existing destination file:
 
@@ -77,7 +77,7 @@ $sampleDirectory
 python main.py
 ```
 
-Paste the full path printed by `$sampleDirectory` and answer `Y`. The destination folder is pre-created so this example exercises the working preview case.
+Paste the full path printed by `$sampleDirectory` and answer `Y`. This example previews a filename conflict while preserving both sample files.
 
 Illustrative complete console interaction; the generated path will differ:
 
@@ -113,7 +113,7 @@ Checklist for a roughly 60–90 second recording:
 
 - Organize disposable files with different extensions in normal move mode.
 - Demonstrate an existing destination filename and show that both files remain intact.
-- Show the working dry-run preview with existing destination folders and its log output, plus a handled invalid-directory error if time permits.
+- Show dry-run previewing a missing destination folder without creating it, inspect the log, and include a handled invalid-directory error if time permits.
 
 ## Tests and evaluation
 
@@ -122,12 +122,10 @@ Verification used Windows, Python 3.14.6, disposable directories, and temporary 
 | Check | Observed result |
 | --- | --- |
 | 21 direct function checks in normal move mode | Passed: extension grouping, multiple-dot names, exact byte preservation, empty files, spaces, Unicode names, extensionless files, repeated runs, destination-folder reuse, collision handling, summaries, and error handling. |
-| CLI preview with existing destination folders | Passed: preview and conflict renames were logged; source and destination contents were unchanged. |
-| Answer `N` to select normal mode | Passed: the CLI created the destination folder, moved the sample file, and logged the completed move. |
-| Preview with a missing destination folder | Failed: the folder creation was previewed, then entering that uncreated folder stopped the run. |
+| 7 CLI move and dry-run checks | Passed: normal moves with new folders and multiple conflicts; previews with missing or empty folders, one or multiple conflicts, and mixed extensions including Unicode and extensionless names. Previewed destinations matched the expected moves, and dry-run left all target files and directories unchanged. |
 | Relative target paths | Unsupported in the current implementation; this is a limitation beyond the task's explicit core requirements. |
 
-There is no committed automated test suite or repository test command yet. The 21 function checks were run using a temporary review harness; the interactive cases were run separately on temporary copies of the script.
+All 28 checks passed. There is no committed automated test suite or repository test command yet. The 21 function checks were run using a temporary review harness; the 7 interactive cases were run separately on temporary copies of the script.
 
 To repeat the interactive checks, use the disposable sample in [Usage](#usage) and run:
 
@@ -136,7 +134,7 @@ python main.py
 Get-Content .\log.log
 ```
 
-Repeat with `N` to verify normal moves. Use a fresh sample directory containing a text file and no `.txt` folder, then answer `Y`, to reproduce the incomplete preview. Inspect the log for errors; handled failures currently can return exit status 0.
+Repeat with `N` to verify normal moves. For a new-folder preview, use a fresh sample directory containing a text file and no `.txt` folder, then answer `Y`. Confirm that the log lists the planned folder and move while the source file remains unchanged and no destination folder is created. Inspect the log for errors; handled failures currently can return exit status 0.
 
 ## Design decisions and limitations
 
@@ -144,5 +142,5 @@ Repeat with `N` to verify normal moves. Use a fresh sample directory containing 
 - Extension grouping is case-insensitive. Folder names retain the suffix's leading dot, such as `.txt` and `.pdf`; extensionless files and names such as `.env` go to `Others`.
 - Moves use `Path.rename()` instead of reading and rewriting file contents, preserving bytes and original filename spelling. Conflicts append a number to the whole name, for example `notes.txt(1)`.
 - Windows paths and absolute directory inputs are currently required. Helpers change the process's working directory.
-- A dry-run preview stops when a required destination folder does not already exist. This affects the optional dry-run bonus, not normal move mode.
+- Dry-run logs planned folder creation and moves while leaving target files and directories unchanged. Filename conflicts are checked when a destination folder already exists.
 - Errors stop the run instead of continuing with other files. Details are recorded in the log; its write mode replaces previous run history.
