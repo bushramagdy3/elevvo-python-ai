@@ -9,6 +9,7 @@ def organizeDirectory(target_directory :str):
     except Exception as e:
         print("An unexpected error occured while reading the files, please try again")
         print(f"Error: {e}")
+        print("Exiting...")
         sys.exit()
 
     try:
@@ -16,6 +17,7 @@ def organizeDirectory(target_directory :str):
     except Exception as e:
             print("An unexpected error occured while writing the files, please try again")
             print(f"Error: {e}")
+            print("Exiting...")
             sys.exit()
 
 def directoryToDict(target_directory :str):
@@ -27,6 +29,7 @@ def directoryToDict(target_directory :str):
         files = os.listdir(target_directory)
     except FileNotFoundError:
         print("Directory not found, please enter a valid one")
+        print("Exiting...")
         sys.exit()
     
     organized_files = dict()
@@ -57,19 +60,23 @@ def addToSubfolders(files_dict :dict, target_directory :str):
     os.chdir(target_directory)
 
     for extension in files_dict.keys():
+        print(f"Organizing .{extension} files...")
         if extension not in os.listdir(target_directory):
+            print(f"Created new folder named {extension}")
             os.makedirs(extension)
 
         os.chdir(f"{target_directory}//{extension}")
 
         for file in files_dict[extension]:
             i = 1
-            tmp_file_name = ""
             file_name = file["name"]
+            original_file_name = file["name"]
             while file_name in os.listdir():
-                tmp_file_name = file_name + f"({i})"
+                print(f"Found an already existing file with the name {file_name}, renaming the new file...")
+                file_name = original_file_name + f"({i})"
                 i += 1
-            with open(f"{os.curdir()}/{tmp_file_name or file_name}", "w") as new_file:
+            with open(f"{os.curdir()}/{file_name}", "w") as new_file:
+                print(f"Adding {file_name} to the {extension} directory...")
                 new_file.write(file["content"])
 
 
@@ -78,5 +85,7 @@ if __name__ == "__main__":
     print("Please enter the path of the directory you'd like to organize:")
 
     target_directory = input()
+
+    organizeDirectory(target_directory)
 
     print("Organization Successful!")
