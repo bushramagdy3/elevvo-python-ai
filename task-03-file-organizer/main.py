@@ -46,10 +46,10 @@ def directoryToDict(target_directory :str):
             extension = "Others"
 
         if extension in organized_files.keys():
-            organized_files[extension].append(file.lower())
+            organized_files[extension].append(file)
         else:
             organized_files[extension] = list()
-            organized_files[extension].append(file.lower())
+            organized_files[extension].append(file)
     
     return organized_files
 
@@ -59,7 +59,7 @@ def addToSubfolders(files_dict :dict, target_directory :str):
     for extension in files_dict.keys():
         os.chdir(target_directory)
         print(f"Organizing files with extension '.{extension}'...")
-        if extension not in os.listdir(target_directory):
+        if not (Path(target_directory) / extension).exists():
             print(f"Creating folder: {Path(target_directory) / extension}")
             os.makedirs(extension)
 
@@ -67,7 +67,7 @@ def addToSubfolders(files_dict :dict, target_directory :str):
         for file in files_dict[extension]:
             i = 1
             file_name = file
-            while file_name in (x.lower() for x in os.listdir()):
+            while Path(file_name).exists():
                 print(f"Filename conflict: '{file_name}' already exists in '{Path(target_directory) / extension}'. Choosing a new destination name...")
                 file_name = file + f"({i})"
                 i += 1
