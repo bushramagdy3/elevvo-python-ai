@@ -35,18 +35,21 @@ def directoryToDict(target_directory :str):
     organized_files = dict()
 
     for file in files:
-        if '.' not in file:
+        path = Path(f"{target_directory}\\{file}")
+        if path.is_dir():
             continue
 
         print(f"Found file: {file}")
 
-        extension = file.split('.')[-1]
+        extension = path.suffix.lower()
+        if not extension:
+            extension = "Others"
 
         if extension in organized_files.keys():
-            organized_files[extension].append(file)
+            organized_files[extension].append(file.lower())
         else:
             organized_files[extension] = list()
-            organized_files[extension].append(file)
+            organized_files[extension].append(file.lower())
     
     return organized_files
 
@@ -64,7 +67,7 @@ def addToSubfolders(files_dict :dict, target_directory :str):
         for file in files_dict[extension]:
             i = 1
             file_name = file
-            while file_name in os.listdir():
+            while file_name in (x.lower() for x in os.listdir()):
                 print(f"Filename conflict: '{file_name}' already exists in '{Path(target_directory) / extension}'. Choosing a new destination name...")
                 file_name = file + f"({i})"
                 i += 1
