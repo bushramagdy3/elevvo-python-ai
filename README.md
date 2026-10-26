@@ -6,7 +6,7 @@ A collection of Python automation and AI projects being developed for the Elevvo
 
 | Task | Project | Level | Status | Demo |
 | --- | --- | --- | --- | --- |
-| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | Not recorded yet |
+| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | Recorded |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Planned | Not recorded yet |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Planned | Not recorded yet |
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Planned | Not recorded yet |
