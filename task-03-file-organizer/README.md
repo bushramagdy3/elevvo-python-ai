@@ -4,7 +4,7 @@
 
 **Status:** Complete
 
-A Windows command-line tool for grouping files into extension-based subfolders while preserving existing destination files. It prompts for a directory and dry-run choice, previews changes without moving files when requested, and records operations and errors in a log file.
+A command-line tool for grouping files into extension-based subfolders while preserving existing destination files. It prompts for a directory and dry-run choice, previews changes without moving files when requested, and records operations and errors in a log file.
 
 ## Requirements coverage
 
@@ -12,8 +12,8 @@ A Windows command-line tool for grouping files into extension-based subfolders w
 | --- | --- | --- |
 | Scan a target directory and sort files into subfolders by extension | [directoryToDict](main.py#L22) groups top-level files; [addToSubfolders](main.py#L55) moves them. Answer `N` at the interactive prompt to use normal move mode. | Complete |
 | Never overwrite an existing destination file; rename the incoming file on conflict | [Destination checks and renaming](main.py#L75) select names such as `notes.txt(1)`, leaving existing files intact. Verified on Windows through direct function calls and the CLI. | Complete |
-| Report each move with filename, source, and destination | [Move summaries](main.py#L85) record all three fields in `log.log`. The file-logging bonus replaces console operation messages; input prompts remain in the console. | Complete |
-| Handle duplicate filenames, missing permissions, and empty folders gracefully | [Error handling](main.py#L6) logs failures and stops the run. Direct function checks covered conflicts, empty folders, missing paths, and simulated permission errors. | Complete |
+| Report each move with filename, source, and destination | [Move summaries](main.py#L86) record all three fields in `log.log`. The file-logging bonus replaces console operation messages; input prompts remain in the console. | Complete |
+| Handle duplicate filenames, missing permissions, and empty folders gracefully | [Per-file error handling](main.py#L99) logs and skips files that fail, allowing other files to continue. [Directory error handling](main.py#L6) logs scanning or setup failures and stops the run. | Complete |
 
 ## Bonuses and additional features
 
@@ -22,49 +22,30 @@ Official bonus features:
 - **File logging — Complete.** Uses Python's `logging` module with `INFO`, `WARNING`, and `ERROR` entries in a UTF-8 log file.
 - **Dry-run mode — Complete.** Answer `Y` to log planned folder creation, moves, and conflict renames without creating folders or moving files. Verified with missing, empty, and populated destination folders, including multiple filename conflicts.
 
-The brief's **Reading ahead** suggestion to schedule runs with cron or Windows Task Scheduler is not implemented.
 
 ## Setup
 
-Tested on **Windows with Python 3.14.6**. The program uses only the standard library: `os`, `sys`, `pathlib`, and `logging`. No API accounts, environment variables, or third-party packages are required.
+Python 3 is required; verification used Python 3.14.6. The program uses only Python's standard library: `os`, `sys`, `pathlib`, and `logging`. No virtual environment, dependency installation, API accounts, or environment variables are needed.
 
-From the repository root, create an optional virtual environment.
-
-Windows PowerShell:
-
-```powershell
-cd task-03-file-organizer
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-macOS/Linux environment creation:
+From the repository root, enter the task directory:
 
 ```sh
 cd task-03-file-organizer
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
 ```
-
-The current organizer uses Windows-specific paths; the macOS/Linux commands above create an environment only. Application execution on those platforms is unsupported by the current implementation.
-
-[requirements.txt](requirements.txt) contains comments only, so the installation command installs no packages. Run the application commands below from the task directory.
 
 ## Usage
 
 Launch the interactive script:
 
-```powershell
+```sh
 python main.py
 ```
 
-Enter an **absolute Windows directory path** when prompted.
+Use `python3 main.py` if your system uses the `python3` command. Enter an **absolute directory path** when prompted.
 
 Answer uppercase `Y` to preview changes or `N` to move files. Only uppercase `Y` enables dry-run; all other answers select normal move mode.
 
-For a disposable example, create a sample directory with different file types, an existing destination file, and an unrelated subfolder:
+For a disposable example in PowerShell, create a sample directory with different file types, an existing destination file, and an unrelated subfolder:
 
 ```powershell
 $sampleDirectory = Join-Path $env:TEMP ("elevvo-demo-" + [guid]::NewGuid().ToString("N"))
@@ -126,6 +107,6 @@ Runtime logs are [ignored by Git](../.gitignore).
 
 ## Demo
 
-This demo show....
+The demo shows the program running in a chosen directory in both dry-run and normal modes, including duplicate filenames being renamed without overwriting existing files, reuse of existing extension folders, unrelated subfolders remaining unchanged, and the resulting log output.
 
 [ADD DEMO HERE]

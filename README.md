@@ -31,11 +31,11 @@ Choose a task and follow its setup instructions:
 - [Task 8: AI-Assisted Code Review Tool](task-08-code-reviewer/README.md#setup)
 - [Task 9: AI Agent for a Two-Tool Task](task-09-two-tool-agent/README.md#setup)
 
-Task 3 currently targets Windows and uses Python's standard library. Run each project from its own folder; there is no shared application launcher.
+Task 3 uses only Python's standard library and requires no additional packages. Run each project from its own folder; there is no shared application launcher.
 
 ## Documentation and demos
 
-Each task README covers requirements, bonuses, setup, usage, demos, tests, and limitations. Task 3 documents the completed implementation and 28 passed checks; the remaining READMEs describe planned work. Its [demo placeholder and planned walkthrough](task-03-file-organizer/README.md#demo) cover both modes in a chosen directory, duplicate filenames, and existing subfolders. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
+Task READMEs cover requirements, bonuses, setup, usage, and demos. Task 3 documents the completed implementation; the remaining READMEs describe planned work. Its [demo placeholder](task-03-file-organizer/README.md#demo) describes the planned demonstration of both modes in a chosen directory, duplicate filenames, and existing subfolders. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
 
 ## Author
 
