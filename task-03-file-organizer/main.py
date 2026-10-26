@@ -4,7 +4,7 @@ from pathlib import Path
 import logging
 
 def organizeDirectory(target_directory :Path, is_dry_run :bool = False ):
-    '''scans a target directory and automatically sorts files into subfolders based on file extension'''
+    '''Scans a target directory and automatically sorts files into subfolders based on file extension'''
     try:
         files_dict = directoryToDict(target_directory)
     except Exception as e:
