@@ -8,8 +8,6 @@ A Windows command-line tool for grouping files into extension-based subfolders w
 
 ## Requirements coverage
 
-This mapping follows the supplied Task 3 brief image. The original task PDF is not stored in this repository; the mapping should be cross-checked against that PDF when available.
-
 | Required feature | Implementation | Status |
 | --- | --- | --- |
 | Scan a target directory and sort files into subfolders by extension | [directoryToDict](main.py#L22) groups top-level files; [addToSubfolders](main.py#L55) moves them. Answer `N` at the interactive prompt to use normal move mode. | Complete |
@@ -66,18 +64,22 @@ Enter an **absolute Windows directory path** when prompted.
 
 Answer uppercase `Y` to preview changes or `N` to move files. Only uppercase `Y` enables dry-run; all other answers select normal move mode.
 
-For a disposable example, create a sample directory with an existing destination file:
+For a disposable example, create a sample directory with different file types, an existing destination file, and an unrelated subfolder:
 
 ```powershell
 $sampleDirectory = Join-Path $env:TEMP ("elevvo-demo-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path (Join-Path $sampleDirectory ".txt") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $sampleDirectory "archive.v1") -Force | Out-Null
 Set-Content -LiteralPath (Join-Path $sampleDirectory "notes.txt") -Value "incoming sample"
 Set-Content -LiteralPath (Join-Path $sampleDirectory ".txt\notes.txt") -Value "existing sample"
+Set-Content -LiteralPath (Join-Path $sampleDirectory "data.csv") -Value "name,value"
+Set-Content -LiteralPath (Join-Path $sampleDirectory "README") -Value "extensionless sample"
+Set-Content -LiteralPath (Join-Path $sampleDirectory "archive.v1\keep.txt") -Value "leave this subfolder unchanged"
 $sampleDirectory
 python main.py
 ```
 
-Paste the full path printed by `$sampleDirectory` and answer `Y`. This example previews a filename conflict while preserving both sample files.
+Paste the full path printed by `$sampleDirectory` and answer `Y`. This previews folder creation, moves, and the duplicate-name rename while leaving all sample files and folders unchanged.
 
 Illustrative complete console interaction; the generated path will differ:
 
@@ -103,44 +105,27 @@ INFO:root:[DRY RUN] Would move file: notes.txt | Source: C:\Users\Example\AppDat
 INFO:root:File organization run completed successfully.
 ```
 
-Both sample files remain unchanged during this preview. Run `python main.py` again with the same sample path and answer `N` to move the incoming file to `.txt\notes.txt(1)`, preserving the existing `.txt\notes.txt`. Runtime logs are [ignored by Git](../.gitignore).
+Run `python main.py` again with the same sample path and answer `N` to apply the moves. The existing `.txt` folder is reused, the incoming duplicate becomes `notes.txt(1)`, and `archive.v1` and its contents stay untouched.
+
+Expected sample layout after normal mode:
+
+```text
+elevvo-demo-<id>/
+├── .csv/
+│   └── data.csv
+├── .txt/
+│   ├── notes.txt       (existing file preserved)
+│   └── notes.txt(1)    (incoming file renamed)
+├── Others/
+│   └── README
+└── archive.v1/
+    └── keep.txt        (existing subfolder unchanged)
+```
+
+Runtime logs are [ignored by Git](../.gitignore).
 
 ## Demo
 
-Demo not recorded yet
+This demo show....
 
-Checklist for a roughly 60–90 second recording:
-
-- Organize disposable files with different extensions in normal move mode.
-- Demonstrate an existing destination filename and show that both files remain intact.
-- Show dry-run previewing a missing destination folder without creating it, inspect the log, and include a handled invalid-directory error if time permits.
-
-## Tests and evaluation
-
-Verification used Windows, Python 3.14.6, disposable directories, and temporary copies of the script. Permission failures were simulated with `unittest.mock`; real filesystem permission restrictions were not tested.
-
-| Check | Observed result |
-| --- | --- |
-| 21 direct function checks in normal move mode | Passed: extension grouping, multiple-dot names, exact byte preservation, empty files, spaces, Unicode names, extensionless files, repeated runs, destination-folder reuse, collision handling, summaries, and error handling. |
-| 7 CLI move and dry-run checks | Passed: normal moves with new folders and multiple conflicts; previews with missing or empty folders, one or multiple conflicts, and mixed extensions including Unicode and extensionless names. Previewed destinations matched the expected moves, and dry-run left all target files and directories unchanged. |
-| Relative target paths | Unsupported in the current implementation; this is a limitation beyond the task's explicit core requirements. |
-
-All 28 checks passed. There is no committed automated test suite or repository test command yet. The 21 function checks were run using a temporary review harness; the 7 interactive cases were run separately on temporary copies of the script.
-
-To repeat the interactive checks, use the disposable sample in [Usage](#usage) and run:
-
-```powershell
-python main.py
-Get-Content .\log.log
-```
-
-Repeat with `N` to verify normal moves. For a new-folder preview, use a fresh sample directory containing a text file and no `.txt` folder, then answer `Y`. Confirm that the log lists the planned folder and move while the source file remains unchanged and no destination folder is created. Inspect the log for errors; handled failures currently can return exit status 0.
-
-## Design decisions and limitations
-
-- Only files directly inside the target directory are processed; subdirectories are skipped.
-- Extension grouping is case-insensitive. Folder names retain the suffix's leading dot, such as `.txt` and `.pdf`; extensionless files and names such as `.env` go to `Others`.
-- Moves use `Path.rename()` instead of reading and rewriting file contents, preserving bytes and original filename spelling. Conflicts append a number to the whole name, for example `notes.txt(1)`.
-- Windows paths and absolute directory inputs are currently required. Helpers change the process's working directory.
-- Dry-run logs planned folder creation and moves while leaving target files and directories unchanged. Filename conflicts are checked when a destination folder already exists.
-- Errors stop the run instead of continuing with other files. Details are recorded in the log; its write mode replaces previous run history.
+[ADD DEMO HERE]

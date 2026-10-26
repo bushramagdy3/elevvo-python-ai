@@ -15,9 +15,9 @@ def organizeDirectory(target_directory :str, is_dry_run :bool = False ):
     try:
         addToSubfolders(files_dict, target_directory, is_dry_run)
     except Exception as e:
-            logging.error("Could not complete file organization in: %s. Error: %s", target_directory, e)
-            logging.info("Exiting...")
-            sys.exit()
+        logging.error("Could not complete file organization in: %s. Error: %s", target_directory, e)
+        logging.info("Exiting...")
+        sys.exit()
 
 def directoryToDict(target_directory :str):
     '''Takes a directory and returns a dictionary with files organized based on extentsion'''

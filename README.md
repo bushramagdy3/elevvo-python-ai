@@ -35,7 +35,7 @@ Task 3 currently targets Windows and uses Python's standard library. Run each pr
 
 ## Documentation and demos
 
-Each task README covers requirements, bonuses, setup, usage, demos, tests, and limitations. Task 3 documents the current implementation and verified results; the remaining READMEs describe planned work. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
+Each task README covers requirements, bonuses, setup, usage, demos, tests, and limitations. Task 3 documents the completed implementation and 28 passed checks; the remaining READMEs describe planned work. Its [demo placeholder and planned walkthrough](task-03-file-organizer/README.md#demo) cover both modes in a chosen directory, duplicate filenames, and existing subfolders. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
 
 ## Author
 
