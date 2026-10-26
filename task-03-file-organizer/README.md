@@ -109,4 +109,4 @@ Runtime logs are [ignored by Git](../.gitignore).
 
 The demo shows the program running in a chosen directory in both dry-run and normal modes, including duplicate filenames being renamed without overwriting existing files, reuse of existing extension folders, unrelated subfolders remaining unchanged, and the resulting log output.
 
-[ADD DEMO HERE]
+https://github.com/user-attachments/assets/389521a6-e81c-48fc-8df9-9a1bcd7d1927

@@ -6,7 +6,7 @@ A collection of Python automation and AI projects being developed for the Elevvo
 
 | Task | Project | Level | Status | Demo |
 | --- | --- | --- | --- | --- |
-| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | Recorded |
+| 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | [Play demo](#task-3-demo) |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Planned | Not recorded yet |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Planned | Not recorded yet |
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Planned | Not recorded yet |
@@ -35,7 +35,13 @@ Task 3 uses only Python's standard library and requires no additional packages. 
 
 ## Documentation and demos
 
-Task READMEs cover requirements, bonuses, setup, usage, and demos. Task 3 documents the completed implementation; the remaining READMEs describe planned work. Its [demo placeholder](task-03-file-organizer/README.md#demo) describes the planned demonstration of both modes in a chosen directory, duplicate filenames, and existing subfolders. Demo recordings are not available yet. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
+Task READMEs cover requirements, bonuses, setup, usage, and demos. Task 3 documents the completed implementation; the remaining READMEs describe planned work. [README_GUIDE.md](README_GUIDE.md) defines the repository's documentation conventions.
+
+### Task 3 demo
+
+The recording shows dry-run and normal modes, duplicate filename handling, existing subfolders, and log output.
+
+https://github.com/user-attachments/assets/389521a6-e81c-48fc-8df9-9a1bcd7d1927
 
 ## Author
 
