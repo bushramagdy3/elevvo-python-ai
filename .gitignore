@@ -25,3 +25,6 @@ Thumbs.db
 
 # File organizer runtime log
 /task-03-file-organizer/log.log
+
+# Test directory
+/task-03-file-organizer/test-directory
