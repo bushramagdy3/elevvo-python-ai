@@ -9,7 +9,7 @@ def getWheather(city :str):
 
     url = f"https://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={city}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         if response.status_code != 200:
             raise Exception(f"Cannot retreive weather data: {response.status_code}")
         elif response.json()["location"]["name"].strip().lower() != city:
@@ -25,7 +25,7 @@ def read_info(weather_info :dict, celsius :bool):
     print(f"Humidity: {weather_info["humidity"]}%")
     print(f"Cloud: {weather_info["cloud"]}%")
     print(f"is_day: {"Yes" if weather_info["is_day"] == 1 else "No"}.")
-    print(f"UV: {weather_info["uv"]}%")
+    print(f"UV: {weather_info["uv"]}")
 
 if __name__ == "__main__":
     print("Welcome to Bushra's weather dashboard!")
