@@ -2,7 +2,7 @@ import requests
 import dotenv
 import sys
 
-WEATHER_API_KEY = dotenv.get_key("WEATHER_API_KEY")
+WEATHER_API_KEY = dotenv.get_key(key_to_get="WEATHER_API_KEY", dotenv_path=".env")
 
 def getWheather(city :str):
     '''Returns the weather of city'''
@@ -26,14 +26,15 @@ def read_info(weather_info :dict, celsius :bool):
 if __name__ == "__main__":
     print("Welcome to Bushra's weather dashboard!")
 
-    city = input("Please enter your city:")
-    celsius = input("Would you like to read temprature in celsius (Y) or fahrenheit (N)?")
+    city = input("Please enter your city: ")
+    celsius = input("Would you like to read temprature in celsius (Y) or fahrenheit (N)? ")
     celsius = True if input == 'Y' else False
 
     try:
-        weather_info = getWheather(city)
+        weather_info = getWheather(city.lower())
     except Exception as e:
         print(f"Wasn't able to get information for {city}, please try again")
+        print(e)
         sys.exit()
 
     read_info(weather_info, celsius)
