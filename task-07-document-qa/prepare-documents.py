@@ -2,12 +2,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
 import os
 from sentence_transformers import SentenceTransformer
-from chromadb import Client
+from chromadb import PersistentClient
 import logging
 
 DOCS_PATH = Path(os.getcwd(),"recipe_documents")
 embedding_model = SentenceTransformer(model_name_or_path="all-mpnet-base-v2", device="cpu")
-client = Client()
+client = PersistentClient(path=os.chdir())
 collection = client.get_or_create_collection(name = "recipes")
 
 def getDocumentsChunks(path :str = DOCS_PATH):
@@ -28,20 +28,24 @@ def getDocumentsChunks(path :str = DOCS_PATH):
         with open(Path(os.getcwd(),doc), "r") as file:
             content = file.read()
 
-        chunks.extend(chunk.replace('\n', " ") for chunk in splitter.split_text(content))
+        chunks.extend({"source": doc, "chunk": chunk.replace('\n', " ")} for chunk in splitter.split_text(content))
 
     return chunks
 
-def embedChunks(chunks :list[str]):
+def embedChunks(chunks :list[dict]):
     logging.info("Embedding chunks...")
-    return embedding_model.encode(chunks)
+    for chunk in chunks:
+        chunk["embedding"] = embedding_model.encode(chunk["chunk"])
+    return chunks
 
 def saveEmbeddingToVectorStore(embeddings :list, chunks :list):
     logging.info("Storing chunks to chromaDB collection")
+    embeddings = [chunk["embedding"] for chunk in chunks]
     collection.add(
         ids = range(0, len(chunks) - 1),
         documents = chunks,
-        embeddings = embeddings
+        embeddings = embeddings,
+        metadatas = [{"source": chunk["source"]} for chunk in chunks]
     )
 
 def prepareDocuments(path :str = DOCS_PATH):
