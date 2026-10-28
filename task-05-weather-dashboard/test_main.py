@@ -1,6 +1,7 @@
 from unittest.mock import patch, MagicMock
 from main import getWheather
 import pytest
+from requests.exceptions import Timeout, ConnectionError
 
 @patch('main.requests')
 def test_successful_response(mock_requests_get):
@@ -66,7 +67,7 @@ def test_wrong_city(mock_requests_get):
 @patch('main.requests')
 def test_timeout(mock_requests_get):
 
-    mock_requests_get.get.side_effect = Exception("Timeout")
+    mock_requests_get.get.side_effect = Timeout("Timeout")
 
     with pytest.raises(
         Exception,
@@ -77,7 +78,7 @@ def test_timeout(mock_requests_get):
 @patch('main.requests')
 def test_connection(mock_requests_get):
 
-    mock_requests_get.get.side_effect = Exception("Timeout")
+    mock_requests_get.get.side_effect = ConnectionError("Connection")
 
     with pytest.raises(
         Exception,
