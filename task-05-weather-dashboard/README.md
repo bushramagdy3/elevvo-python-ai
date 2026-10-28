@@ -106,9 +106,7 @@ A city that does not match the location name returned by the API is rejected wit
 
 ## Demo
 
-The demo walks through:
-
-<add description here>
+The recording demonstrates Cairo and Riyadh weather lookup, Celsius and Fahrenheit output, an invalid city, and the mocked API tests.
 
 https://github.com/user-attachments/assets/b064c0ae-b08c-43d4-80ab-3084229ec4e3
 
