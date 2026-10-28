@@ -2,25 +2,34 @@
 
 **Level:** Level 3
 
-**Status:** Planned
+**Status:** Complete
 
-Planned tool for retrieving and presenting weather information from a public REST API. The current interface is a command-line placeholder that reports the project is planned; application behaviour has not been implemented.
+An interactive command-line weather dashboard that retrieves current conditions for a user-specified city through [WeatherAPI.com](https://www.weatherapi.com/). It displays weather information in a readable format, supports Celsius and Fahrenheit, and handles invalid locations, timeouts, and connection failures with user-facing messages.
 
 ## Requirements coverage
 
-The official task PDF is not included in this repository. The requirements mapping needs verification against that document before implementation or completion claims can be made.
-
 | Required feature | Implementation | Status |
 | --- | --- | --- |
-| Official task requirements — mapping needs verification | No project implementation; [main.py](main.py) only reports the planning status. | Not implemented |
+| Consume a public REST API to fetch live weather for a user-specified city | [main.py](main.py) accepts a city and uses `requests` to call WeatherAPI's current-weather endpoint over HTTPS. | Complete |
+| Handle API authentication using a key configured outside the source code | `WEATHER_API_KEY` is read from a local `.env` file using `python-dotenv` and passed to the API. | Complete |
+| Handle invalid cities, timeouts, and failed requests gracefully | The application checks HTTP response codes and the returned location, applies a 10-second request timeout, and displays an error message when a lookup fails. | Complete |
+| Present results in a clean, readable CLI format | The CLI displays the weather condition, temperature, feels-like temperature, humidity, cloud cover, daylight status, and UV index. | Complete |
 
 ## Bonuses and additional features
 
-Official bonuses have not been verified because the task PDF is unavailable; none are implemented. No additional features are implemented.
+**Official bonus — Automated API tests: Complete.** Tests use `pytest` and `unittest.mock` to simulate successful responses, invalid locations, unsuccessful HTTP responses, timeouts, and connection failures. Mocked requests allow the tests to run without live API calls.
+
+Additional features:
+
+- A choice of Celsius or Fahrenheit for temperature and feels-like readings.
+- Humidity, cloud cover, daylight status, and UV index alongside the current condition.
+- Leading and trailing whitespace is removed from CLI city input, and matching ignores letter case.
 
 ## Setup
 
-A working Python 3 installation is needed to run the placeholder. No Python version has been tested for this project yet. Run the following from the repository root.
+Use Python 3.12 or newer. The application depends on `requests` and `python-dotenv`; dependency versions are listed in [requirements.txt](requirements.txt).
+
+Run the following from the repository root.
 
 Windows PowerShell:
 
@@ -40,7 +49,27 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-[requirements.txt](requirements.txt) contains comments only and installs no project dependencies. Application configuration, environment variable names, and external services have not been selected. Add a `.env.example` with placeholders when environment variables are introduced.
+### API configuration
+
+Create an account at [WeatherAPI.com](https://www.weatherapi.com/) and obtain an API key. Create a `.env` file beside `main.py` containing:
+
+```dotenv
+WEATHER_API_KEY=your_weatherapi_key_here
+```
+
+| Setting | Purpose |
+| --- | --- |
+| `WEATHER_API_KEY` | Authenticates requests to WeatherAPI. |
+
+Start the application from the task directory so it can read `.env`. The repository's `.gitignore` excludes `.env` files from version control. API access requires an internet connection and is subject to the provider's plan limits.
+
+### Test dependency
+
+Install `pytest` in the same virtual environment to run the automated tests:
+
+```sh
+python -m pip install pytest
+```
 
 ## Usage
 
@@ -50,34 +79,80 @@ From the task directory with the virtual environment active:
 python main.py
 ```
 
-Expected placeholder output:
+Enter a city when prompted. Enter `Y` for Celsius or `N` for Fahrenheit; the temperature choice ignores letter case and surrounding whitespace. Any response other than `Y` selects Fahrenheit.
+
+Illustrative complete interaction; weather values change with the location and time:
 
 ```text
-Task 5 — Weather Dashboard Using a Public REST API is planned. Implementation is not available yet.
+Welcome to Bushra's weather dashboard!
+Please enter your city: Cairo
+Would you like to read temprature in celsius (Y) or fahrenheit (N)? Y
+Condition: Sunny.
+Temprature: 28 degrees.
+Feels Like: 29 degrees.
+Humidity: 40%
+Cloud: 0%
+is_day: Yes.
+UV: 5
 ```
 
-The placeholder exits with status 1 to indicate that the application is unavailable. It accepts no input; a complete application interaction will be documented after implementation.
+Both temperature readings use the selected scale. Humidity and cloud cover are percentages; UV is an index.
+
+If a request fails, the application displays an error and exits. For example, a connection failure or timeout displays:
+
+```text
+You seem like you're not connected, please try again
+```
+
+An unsuccessful HTTP response displays its status code. For example:
+
+```text
+Cannot retreive weather data: 400
+```
+
+A city that does not match the location name returned by the API is rejected with a city-name error. Run the application again to perform another lookup.
 
 ## Demo
 
-Demo not recorded yet
+**Demo video:** `TASK_5_DEMO_URL`
 
-Recording checklist for a roughly 60–90 second demo after implementation:
+The demo walks through:
 
-- Retrieve and display Cairo weather.
-- Show a helpful response for a nonexistent city.
-- Include an implemented bonus if available, using safe sample data without credentials.
+1. Retrieving and displaying the current weather for Cairo.
+2. Selecting Celsius and Fahrenheit.
+3. Entering an invalid city and displaying the error response.
+4. Demonstrating a handled connection failure.
+5. Running the automated tests with mocked API responses.
 
 ## Tests and evaluation
 
-No project tests or test command are available yet. No project test results are claimed. Add tests under `tests/` when implementation begins; the usage command above only invokes the placeholder.
+Run the test suite from `task-05-weather-dashboard`:
 
-Planned checks from the [repository guide](../README_GUIDE.md):
+```sh
+python -m pytest -q
+```
 
-- A valid city produces the expected weather fields.
-- A nonexistent city receives a helpful response.
-- Mocked API timeouts and unsuccessful responses are handled clearly.
+The tests in [test_main.py](test_main.py) replace the API request with controlled fake responses or exceptions and check the weather function's behavior.
+
+| Test case | Expected behavior |
+| --- | --- |
+| Successful response for a valid city | Return the weather data from the response's `current` field. |
+| Returned location does not match the city | Raise a city-name error. |
+| Invalid city or unsuccessful HTTP status | Raise an error that includes the HTTP status code. |
+| Request timeout | Raise the application's connection-failure message. |
+| Connection failure | Raise the application's connection-failure message. |
+
+The tests exercise the API-handling function independently of changing weather data and external network availability.
 
 ## Design decisions and limitations
 
-The weather provider, display interface, response fields, and error handling are not selected or implemented. Network access, account requirements, API limits, credentials, and possible costs depend on the provider chosen later.
+- **HTTPS and JSON:** Weather data is requested from `https://api.weatherapi.com/v1/current.json`. HTTP status is checked before extracting JSON weather fields.
+- **Local configuration:** The API key is stored in `.env` and read with `python-dotenv`.
+- **Bounded waiting:** A 10-second request timeout limits waiting during connection and response reads.
+- **Location matching:** The requested city is compared with the API's returned location name after normalization. Alternative spellings, aliases, and localized names may be rejected when the names differ.
+- **Error messages:** Connection failures and timeouts share a user-facing message. Other HTTP failures include a status code.
+- **One lookup per run:** The CLI presents one result or error, then exits. Weather data and service availability depend on the external provider.
+
+## Attribution
+
+Weather data is provided by [WeatherAPI.com](https://www.weatherapi.com/). See the [API documentation](https://www.weatherapi.com/docs/) for endpoint details and response fields.

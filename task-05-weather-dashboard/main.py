@@ -9,7 +9,10 @@ def getWheather(city :str):
 
     url = f"https://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={city}"
     try:
-        response = requests.get(url, timeout=10)
+        try:
+            response = requests.get(url, timeout=10)
+        except:
+            raise Exception("You seem like you're not connected, please try again")
         if response.status_code != 200:
             raise Exception(f"Cannot retreive weather data: {response.status_code}")
         elif response.json()["location"]["name"].strip().lower() != city:
@@ -37,7 +40,6 @@ if __name__ == "__main__":
     try:
         weather_info = getWheather(city.strip().lower())
     except Exception as e:
-        print(f"Wasn't able to get information for {city}, please try again")
         print(e)
         sys.exit()
 
