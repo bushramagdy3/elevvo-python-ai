@@ -53,4 +53,4 @@ https://github.com/user-attachments/assets/bc1b7e92-8d66-4bca-aeac-a4e3b7e09686
 
 ## Author
 
-Bushra Magdy — [GitHub](https://github.com/bushramagdy3).
+Bushra Magdy
