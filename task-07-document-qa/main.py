@@ -3,8 +3,15 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
 import os
+from sentence_transformers import SentenceTransformer
+from openai import OpenAI
+import dotenv
 
 DOCS_PATH = Path(os.getcwd(),"recipe_documents")
+OPENAI_API_KEY = dotenv.get_key(key_to_get="OPENAI_API_KEY", dotenv_path=".env")
+embedding_model = SentenceTransformer(model_name_or_path="all-mpnet-base-v2", device="cpu")
+client = OpenAI(api_key=OPENAI_API_KEY)
+
 
 def getDocumentsChunks(path :str = DOCS_PATH):
     os.chdir(path)
@@ -25,5 +32,22 @@ def getDocumentsChunks(path :str = DOCS_PATH):
 
     return chunks
 
+def embedChunks(chunks :list[str]):
+    return embedding_model.encode(chunks)
+
+def saveEmbeddingToVectorStore(embeddings :list):
+    pass
+
+def embedQuery(query :str):
+    return embedding_model.encode(query)
+
+def semanticSearch(embeddedQuery :str):
+    pass
+
+def callLLM(query :str,  context :str):
+    pass
+
 if __name__ == "__main__":
-    print(getDocumentsChunks())
+    chunks = getDocumentsChunks()
+    embeddings = embedChunks(chunks)
+    print(embeddings)
