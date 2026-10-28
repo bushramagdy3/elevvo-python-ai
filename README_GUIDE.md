@@ -18,7 +18,6 @@ Use these task folders for the agreed project selection:
 | 5 | `task-05-weather-dashboard/` | Weather Dashboard Using a Public REST API | Level 3 |
 | 7 | `task-07-document-qa/` | LLM-Powered Document Q&A Tool | Industry Level |
 | 8 | `task-08-code-reviewer/` | AI-Assisted Code Review Tool | Industry Level |
-| 9 | `task-09-two-tool-agent/` | AI Agent for a Two-Tool Task | Industry Level |
 
 Each task has its own README, source code, dependency declaration, and sample inputs where needed. Keep tests in that task's `tests/` folder and screenshots in `assets/` when applicable. Adapt source layout to the actual implementation; do not create empty folders for appearance. Preserve an established working layout and update links if it differs from these defaults.
 
@@ -30,7 +29,7 @@ Title: `Elevvo Python Programming & AI`.
 
 Use this introductory description, adjusting tense only when supported by actual progress:
 
-> A collection of Python automation and AI projects developed for the Elevvo Python Programming & AI internship. The selected projects cover file organization, weather API integration, document question answering, AI-assisted code review, and a two-tool AI agent. Each task folder contains its own documentation and setup instructions.
+> A collection of Python automation and AI projects developed for the Elevvo Python Programming & AI internship. The selected projects cover file organization, weather API integration, document question answering, and AI-assisted code review. Each task folder contains its own documentation and setup instructions.
 
 ### 2. Projects
 
@@ -38,7 +37,7 @@ Use one table with columns: Task, Project, Level, Status, Demo. Link each projec
 
 ### 3. Getting started
 
-Explain how to clone the repository and choose a task. Link to each task's setup instructions. Do not imply there is one command that launches all five projects unless that command exists. Use verified repository URLs only.
+Explain how to clone the repository and choose a task. Link to each task's setup instructions. Do not imply there is one command that launches all four projects unless that command exists. Use verified repository URLs only.
 
 ### 4. Documentation and demos
 
@@ -104,9 +103,8 @@ Credit reused components, tutorials, models, data, or substantial external code 
 | 5 — Weather | Retrieve Cairo weather | A nonexistent city receives a helpful response; test timeouts with a mock |
 | 7 — Document Q&A | Answer a question from sample documents and cite the supporting chunks | An unrelated question falls below the configured retrieval threshold and is declined |
 | 8 — Code reviewer | Produce a structured review of a deliberately buggy sample file | A missing input file is handled clearly; test malformed model output separately |
-| 9 — Two-tool agent | Complete and log a goal using the two configured tools | A tool failure is handled; verify that the execution limit stops an unfinished run |
 
-For Task 7, report the actual threshold and scoring method. For Task 8, explain report validation and approximate line references, and document that suggestions are not automatically executed or applied. For Task 9, name the two tools and execution limit; log tool inputs and outputs without exposing hidden model reasoning. If implementing the third-tool bonus, document the default two-tool mode and the optional third-tool mode clearly.
+For Task 7, report the actual threshold and scoring method. For Task 8, explain report validation and approximate line references, and document that suggestions are not automatically executed or applied.
 
 ## Final documentation checks
 
@@ -120,4 +118,4 @@ For Task 7, report the actual threshold and scoring method. For Task 8, explain 
 
 ## Short GitHub repository description
 
-Python automation and AI projects for the Elevvo internship: file organization, weather APIs, document Q&A, code review, and a two-tool AI agent.
+Python automation and AI projects for the Elevvo internship: file organization, weather APIs, document Q&A, and code review.

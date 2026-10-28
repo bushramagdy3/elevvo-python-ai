@@ -1,6 +1,6 @@
 # Elevvo Python Programming & AI
 
-A collection of Python automation and AI projects developed for the Elevvo Python Programming & AI internship. The projects cover file organization, weather API integration, document question answering, AI-assisted code review, and a two-tool AI agent. Each task folder contains its own source code, documentation, and setup instructions.
+A collection of Python automation and AI projects developed for the Elevvo Python Programming & AI internship. The four projects cover file organization, weather API integration, document question answering, and AI-assisted code review. Each task folder contains its own source code, documentation, and setup instructions.
 
 ## Projects
 
@@ -8,13 +8,12 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 | --- | --- | --- | --- | --- |
 | 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | [Play demo](#task-3-demo) |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Complete | [Play Demo](#task-5-demo) |
-| 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Complete | `TASK_7_DEMO_URL` |
-| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | `TASK_8_DEMO_URL` |
-| 9 | [AI Agent for a Two-Tool Task](task-09-two-tool-agent/) | Industry Level | Complete | `TASK_9_DEMO_URL` |
+| 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Planned | `TASK_7_DEMO_URL` |
+| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Planned | `TASK_8_DEMO_URL` |
 
 The file organizer groups files by extension, handles duplicate names, and supports logging and dry-run previews. The weather dashboard retrieves current conditions for a chosen city, supports Celsius and Fahrenheit, handles request failures, and includes automated tests with mocked API responses.
 
-The AI projects provide answers grounded in supplied documents, code-review suggestions, and an agent workflow that uses two tools to complete a goal. See each project's README for its requirements, configuration, usage, and design decisions.
+Tasks 7 and 8 are planned tools for answering questions from supplied documents and providing code-review suggestions. See each project's README for its scope and setup instructions.
 
 ## Getting started
 
@@ -31,7 +30,6 @@ Choose a project and follow its setup instructions:
 - [Task 5: Weather Dashboard Using a Public REST API](task-05-weather-dashboard/README.md#setup)
 - [Task 7: LLM-Powered Document Q&A Tool](task-07-document-qa/README.md#setup)
 - [Task 8: AI-Assisted Code Review Tool](task-08-code-reviewer/README.md#setup)
-- [Task 9: AI Agent for a Two-Tool Task](task-09-two-tool-agent/README.md#setup)
 
 Run each project from its own task directory. The file organizer uses Python's standard library. The weather dashboard uses `requests` and `python-dotenv`, with `pytest` for its automated tests; its setup instructions explain how to configure a WeatherAPI key in a local `.env` file.
 
