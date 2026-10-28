@@ -28,3 +28,6 @@ Thumbs.db
 
 # Test directory
 /task-03-file-organizer/test-directory
+
+#vector database
+/task-07-document-qa/vectorDB/

@@ -7,7 +7,7 @@ import logging
 
 DOCS_PATH = Path(os.getcwd(),"recipe_documents")
 embedding_model = SentenceTransformer(model_name_or_path="all-mpnet-base-v2", device="cpu")
-client = PersistentClient(path=os.chdir())
+client = PersistentClient(path=Path(os.getcwd(),"vectorDB"))
 collection = client.get_or_create_collection(name = "recipes")
 
 def getDocumentsChunks(path :str = DOCS_PATH):
@@ -42,9 +42,9 @@ def saveEmbeddingToVectorStore(embeddings :list, chunks :list):
     logging.info("Storing chunks to chromaDB collection")
     embeddings = [chunk["embedding"] for chunk in chunks]
     collection.add(
-        ids = range(0, len(chunks) - 1),
-        documents = chunks,
-        embeddings = embeddings,
+        ids = [str(i) for i in range(0, len(chunks))],
+        documents = [chunk["chunk"] for chunk in chunks],
+        embeddings = [chunk["embedding"] for chunk in chunks],
         metadatas = [{"source": chunk["source"]} for chunk in chunks]
     )
 
@@ -54,6 +54,6 @@ def prepareDocuments(path :str = DOCS_PATH):
     saveEmbeddingToVectorStore(embeddings, chunks)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.info)
+    logging.basicConfig(level=logging.INFO)
     logging.info("Peparing documents...")
     prepareDocuments()
