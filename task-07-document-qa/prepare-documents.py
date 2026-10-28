@@ -2,13 +2,17 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
 import os
 from sentence_transformers import SentenceTransformer
-
+from chromadb import Client
+import logging
 
 DOCS_PATH = Path(os.getcwd(),"recipe_documents")
 embedding_model = SentenceTransformer(model_name_or_path="all-mpnet-base-v2", device="cpu")
-
+client = Client()
+collection = client.get_or_create_collection(name = "recipes")
 
 def getDocumentsChunks(path :str = DOCS_PATH):
+    logging.info("Getting chunks...")
+
     os.chdir(path)
 
     chunks = list()
@@ -20,6 +24,7 @@ def getDocumentsChunks(path :str = DOCS_PATH):
             )
 
     for doc in os.listdir():
+        logging.info(f"Chunking {doc}...")
         with open(Path(os.getcwd(),doc), "r") as file:
             content = file.read()
 
@@ -28,12 +33,23 @@ def getDocumentsChunks(path :str = DOCS_PATH):
     return chunks
 
 def embedChunks(chunks :list[str]):
+    logging.info("Embedding chunks...")
     return embedding_model.encode(chunks)
 
-def saveEmbeddingToVectorStore(embeddings :list):
-    pass
+def saveEmbeddingToVectorStore(embeddings :list, chunks :list):
+    logging.info("Storing chunks to chromaDB collection")
+    collection.add(
+        ids = range(0, len(chunks) - 1),
+        documents = chunks,
+        embeddings = embeddings
+    )
+
+def prepareDocuments(path :str = DOCS_PATH):
+    chunks = getDocumentsChunks(path)
+    embeddings = embedChunks(chunks)
+    saveEmbeddingToVectorStore(embeddings, chunks)
 
 if __name__ == "__main__":
-    chunks = getDocumentsChunks()
-    embeddings = embedChunks(chunks)
-    print(embeddings)
+    logging.basicConfig(level=logging.info)
+    logging.info("Peparing documents...")
+    prepareDocuments()
