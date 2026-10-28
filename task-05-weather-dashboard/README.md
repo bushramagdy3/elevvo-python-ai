@@ -63,14 +63,6 @@ WEATHER_API_KEY=your_weatherapi_key_here
 
 Start the application from the task directory so it can read `.env`. The repository's `.gitignore` excludes `.env` files from version control. API access requires an internet connection and is subject to the provider's plan limits.
 
-### Test dependency
-
-Install `pytest` in the same virtual environment to run the automated tests:
-
-```sh
-python -m pip install pytest
-```
-
 ## Usage
 
 From the task directory with the virtual environment active:
@@ -114,15 +106,13 @@ A city that does not match the location name returned by the API is rejected wit
 
 ## Demo
 
-**Demo video:** `TASK_5_DEMO_URL`
-
 The demo walks through:
 
-1. Retrieving and displaying the current weather for Cairo.
-2. Selecting Celsius and Fahrenheit.
-3. Entering an invalid city and displaying the error response.
-4. Demonstrating a handled connection failure.
-5. Running the automated tests with mocked API responses.
+<add description here>
+
+https://github.com/user-attachments/assets/b064c0ae-b08c-43d4-80ab-3084229ec4e3
+
+
 
 ## Tests and evaluation
 
@@ -138,20 +128,10 @@ The tests in [test_main.py](test_main.py) replace the API request with controlle
 | --- | --- |
 | Successful response for a valid city | Return the weather data from the response's `current` field. |
 | Returned location does not match the city | Raise a city-name error. |
-| Invalid city or unsuccessful HTTP status | Raise an error that includes the HTTP status code. |
 | Request timeout | Raise the application's connection-failure message. |
 | Connection failure | Raise the application's connection-failure message. |
 
 The tests exercise the API-handling function independently of changing weather data and external network availability.
-
-## Design decisions and limitations
-
-- **HTTPS and JSON:** Weather data is requested from `https://api.weatherapi.com/v1/current.json`. HTTP status is checked before extracting JSON weather fields.
-- **Local configuration:** The API key is stored in `.env` and read with `python-dotenv`.
-- **Bounded waiting:** A 10-second request timeout limits waiting during connection and response reads.
-- **Location matching:** The requested city is compared with the API's returned location name after normalization. Alternative spellings, aliases, and localized names may be rejected when the names differ.
-- **Error messages:** Connection failures and timeouts share a user-facing message. Other HTTP failures include a status code.
-- **One lookup per run:** The CLI presents one result or error, then exits. Weather data and service availability depend on the external provider.
 
 ## Attribution
 
