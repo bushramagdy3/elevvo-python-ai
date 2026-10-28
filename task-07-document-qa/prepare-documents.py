@@ -1,5 +1,3 @@
-"""Implementation placeholder for Task 7: LLM-Powered Document Q&A Tool."""
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
 import os

@@ -1,5 +1,3 @@
-"""Implementation placeholder for Task 7: LLM-Powered Document Q&A Tool."""
-
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 import dotenv
