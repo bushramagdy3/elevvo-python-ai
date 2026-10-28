@@ -7,7 +7,7 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 | Task | Project | Level | Status | Demo |
 | --- | --- | --- | --- | --- |
 | 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | [Play demo](#task-3-demo) |
-| 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Complete | [Demo](#task-5-demo) |
+| 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Complete | [Play Demo](#task-5-demo) |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Complete | `TASK_7_DEMO_URL` |
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | `TASK_8_DEMO_URL` |
 | 9 | [AI Agent for a Two-Tool Task](task-09-two-tool-agent/) | Industry Level | Complete | `TASK_9_DEMO_URL` |
@@ -47,9 +47,9 @@ https://github.com/user-attachments/assets/389521a6-e81c-48fc-8df9-9a1bcd7d1927
 
 ### Task 5 demo
 
-`TASK_5_DEMO_URL`
+The recording demonstrates Cairo and Riyadh weather lookup, Celsius and Fahrenheit output, an invalid city, and the mocked API tests.
 
-The recording demonstrates a Cairo weather lookup, Celsius and Fahrenheit output, an invalid city, a handled connection failure, and the mocked API tests.
+https://github.com/user-attachments/assets/bc1b7e92-8d66-4bca-aeac-a4e3b7e09686
 
 ## Author
 
