@@ -99,10 +99,15 @@ if __name__ == "__main__":
 
     query = input("Welcome, ask anything: ")
 
-    response = getResponse(query)
+    while query.strip().lower() != 'exit':
+        response = getResponse(query)
 
-    print(f"Response : {response.response}")
-    for citation in response.citation:
-        print(f"Citation : {citation.source}")
-        print(citation.chunk)
+        print(f"Response : {response.response}")
+        for citation in response.citation:
+            print(f"Citation : {citation.source}")
+            print(citation.chunk)
+
+        print("Enter \'Exit\' to exit the program")
+
+        query = input("Ask anything: ")
 
