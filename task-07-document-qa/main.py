@@ -32,8 +32,8 @@ def getContext(embeddedQuery :str):
     results = collection.query(query_embeddings=[embeddedQuery], n_results=3)
     return [{"document" : results["documents"][0][i] , 
              "source" : results["metadatas"][0][i]["source"], 
-             "score": 1/results["distances"][0][i]} for i in range(3) 
-                                                    if 1/results["distances"][0][i] >= 1]
+             "score": results["distances"][0][i]} for i in range(3) 
+                                                    if results["distances"][0][i] <= 1]
 
 def callLLM(query :str,  contexts :list[dict]):
     prompt = """
@@ -55,7 +55,6 @@ Grounding rules:
   and set citation to an empty list.
 - If relevant documents conflict, explain the disagreement and cite both versions.
 - If the question is ambiguous, ask one short clarifying question instead of guessing.
-- If the context list given is empty, say that you don't have enough contect to answer this query.
 
 Answer and citation rules:
 - Be direct and concise. Use numbered steps for procedures and bullets for lists.
@@ -91,6 +90,8 @@ Answer and citation rules:
 def getResponse(query :str):
     embeddedQuery = embedQuery(query)
     contexts = getContext(embeddedQuery)
+    if not contexts:
+        return Response(response="I don't know. Ask something else.", citation=[])
     response = callLLM(query, contexts)
     return response
     
