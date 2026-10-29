@@ -8,6 +8,8 @@ from pathlib import Path
 import logging
 from pydantic import BaseModel
 
+MAX_DISTANCE = 1.0
+
 class Response(BaseModel):
     response : str
     citation : list[Citation]
@@ -33,7 +35,7 @@ def getContext(embeddedQuery :str):
     return [{"document" : results["documents"][0][i] , 
              "source" : results["metadatas"][0][i]["source"], 
              "score": results["distances"][0][i]} for i in range(3) 
-                                                    if results["distances"][0][i] <= 1]
+                                                    if results["distances"][0][i] <= MAX_DISTANCE]
 
 def callLLM(query :str,  contexts :list[dict]):
     prompt = """
