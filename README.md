@@ -55,7 +55,7 @@ https://github.com/user-attachments/assets/bc1b7e92-8d66-4bca-aeac-a4e3b7e09686
 
 The recording demonstrates the project running in both the command-line and Gradio web interfaces. Each interface is used to ask questions relevant to the recipe documents and unrelated questions, showing answers with source filenames and full supporting chunks for relevant questions, and the refusal message for unrelated questions.
 
-`TASK_7_DEMO_URL`
+https://github.com/user-attachments/assets/c08f2b9e-1b1e-4eb0-9ecb-901c850abe44
 
 ## Author
 
