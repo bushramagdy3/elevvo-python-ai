@@ -8,6 +8,7 @@ client = Client(api_key=dotenv.get_key(dotenv_path='.env', key_to_get="OPENAI_AP
 
 class Issue(BaseModel):
     issue :str
+    code_snippet :str
     line :int
     line_approximate :bool
     suggestion :str
@@ -41,18 +42,25 @@ def getLLMResponse(content :str):
         - Do not invent findings merely to cover every review category.
 
         Line references:
-        - Use 1-based line numbers from the original file, counting blank lines
-        and comments. Use supplied line labels if the input is numbered.
-        - Reference the line most directly associated with the finding.
-        - Set line_approximate to true when the location is uncertain. Never
-        invent an out-of-range line number.
-        - Line numbers remain subject to verification by the calling application.
+        - Count lines from the original source starting at 1, including every
+        blank line and comment. Do not skip or renumber any lines.
+        - Reference the line containing the code responsible for the finding.
+        For a finding spanning several lines, use the first relevant line.
+        - In code_snippet, copy the entire original source line referenced by
+        line exactly, preserving indentation, whitespace, and punctuation.
+        Do not include a line-number label, Markdown fences, or a proposed fix.
+        For a finding spanning several lines, copy only the first relevant line.
+        - Check each reference against the supplied source before returning it.
+        Never invent an out-of-range line number.
+        - Set line_approximate to true for every finding because model-generated
+        references have not been independently verified by the application.
 
         Return only valid JSON with this structure:
         {
         "issues": [
             {
             "issue": "Bug: specific description of the problem and its consequence",
+            "code_snippet": "exact original source line copied here",
             "line": 1,
             "line_approximate": true,
             "suggestion": "A specific, actionable correction"
@@ -62,7 +70,9 @@ def getLLMResponse(content :str):
 
         Output rules:
         - The example above describes the format; do not repeat its placeholder finding.
-        - Every entry must contain issue, line, line_approximate, and suggestion.
+        - Every entry must contain issue, code_snippet, line, line_approximate,
+        and suggestion.
+        - code_snippet must be a non-empty string copied exactly from the source.
         - issue and suggestion must be non-empty strings containing useful details.
         - Prefix issue with "Bug:", "PEP 8:", or "Refactor:".
         - line must be a positive integer.
@@ -76,14 +86,28 @@ def getLLMResponse(content :str):
         model='gpt-4o',
         response_format=Response
     ).choices[0].message.parsed
-    return validateResponse(response)
+    return validateResponse(response, content)
 
-def validateResponse(response :Response):
-    return Response(issues = [
-        issue for issue in response.issues if issue.issue.strip() != ""
-                                                and issue.line > 0
-                                                and issue.suggestion.strip() != ""
-    ])
+def validateResponse(response :Response, content :str):
+    validated_issues = []
+
+    for issue in response.issues:
+        if validateLineAndSnippt(issue.line, issue.code_snippet, content):
+            issue.line_approximate = False
+        else:
+            issue.line_approximate = True
+        if issue.line > 0 and issue.issue.strip() != "" and issue.suggestion.strip() != "" and issue.code_snippet.strip() != "":
+            validated_issues.append(issue)
+    
+    return Response(issues = validated_issues)
+
+def validateLineAndSnippt(line :int, snippet :str, content :str):
+    lines = content.splitlines()
+    if line <= 0 or line > len(lines):
+        return False
+    elif snippet != lines[line - 1]:
+        return False
+    return True
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
