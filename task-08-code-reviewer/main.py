@@ -72,7 +72,7 @@ def getLLMResponse(content :str):
         - Suggestions are recommendations for human review only.
     '''
     response = client.chat.completions.parse(
-        messages=[{"role":"system", "content":prompt}, {"role":"user", content: content}],
+        messages=[{"role":"system", "content":prompt}, {"role":"user", "content": content}],
         model='gpt-4o',
         response_format=Response
     ).choices[0].message.parsed
