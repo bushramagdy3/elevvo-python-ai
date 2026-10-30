@@ -3,6 +3,7 @@ import dotenv
 import os
 from pydantic import BaseModel
 from pathlib import Path
+from typing import Literal
 
 client = Client(api_key=dotenv.get_key(dotenv_path='.env', key_to_get="OPENAI_API_KEY"))
 
@@ -13,6 +14,7 @@ class Issue(BaseModel):
     line_approximate :bool
     suggestion :str
     suggested_code :str
+    action_type :Literal["replace_line", "add_before_line", "add_after_line"]
 
 class Response(BaseModel):
     issues  :list[Issue]
@@ -56,15 +58,22 @@ def getLLMResponse(content :str):
         - Set line_approximate to true for every finding because model-generated
         references have not been independently verified by the application.
 
-        Suggested code:
+        Suggested code and actions:
         - suggestion explains the correction in words. suggested_code contains
         the actual Python code proposed for the user to review.
-        - Treat suggested_code as the complete replacement for the single source
-        line identified by line and code_snippet. It may contain multiple lines
-        when that source line needs to be replaced with a block of code.
-        - To add code before or after the targeted line, include the original
-        line unchanged alongside the new lines in the intended order. Replacing
-        the targeted line with this block must preserve the original line.
+        - action_type must be exactly one of "replace_line", "add_before_line",
+        or "add_after_line". Choose the action that matches the proposed edit.
+        - For "replace_line", suggested_code is the complete replacement for
+        the single original source line identified by line and code_snippet.
+        It may contain multiple lines when replacing that line with a block.
+        - For "add_before_line", suggested_code contains only the new code to
+        insert immediately before the targeted line. Keep the target unchanged
+        and do not include it in suggested_code.
+        - For "add_after_line", suggested_code contains only the new code to
+        insert immediately after the targeted line. Keep the target unchanged
+        and do not include it in suggested_code.
+        - For every action, line and code_snippet refer to the original source
+        before any edits. Do not adjust line numbers for other suggested edits.
         - Preserve the indentation required by the surrounding code, correcting
         indentation when that is the reported issue.
         - Propose the smallest relevant change. Do not return the entire file
@@ -82,7 +91,8 @@ def getLLMResponse(content :str):
             "line": 1,
             "line_approximate": true,
             "suggestion": "A specific, actionable correction",
-            "suggested_code": "actual replacement Python code with appropriate indentation"
+            "suggested_code": "actual replacement Python code with appropriate indentation",
+            "action_type": "replace_line"
             }
         ]
         }
@@ -90,10 +100,12 @@ def getLLMResponse(content :str):
         Output rules:
         - The example above describes the format; do not repeat its placeholder finding.
         - Every entry must contain issue, code_snippet, line, line_approximate,
-        suggestion, and suggested_code.
+        suggestion, suggested_code, and action_type.
         - code_snippet must be a non-empty string copied exactly from the source.
         - issue and suggestion must be non-empty strings containing useful details.
-        - suggested_code must be a non-empty string and differ from code_snippet.
+        - suggested_code must be a non-empty string. For "replace_line", it
+        must differ from code_snippet.
+        - action_type must be "replace_line", "add_before_line", or "add_after_line".
         - Prefix issue with "Bug:", "PEP 8:", or "Refactor:".
         - line must be a positive integer.
         - line_approximate must be a boolean.
@@ -107,7 +119,8 @@ def getLLMResponse(content :str):
         response_format=Response
     ).choices[0].message.parsed
     response = validateResponse(response, content)
-    new_content = applyResponse(content, response)
+    result = applyResponse(content, response)
+    return result
 
 def validateResponse(response :Response, content :str):
     validated_issues = []
@@ -132,6 +145,7 @@ def validateLineAndSnippt(line :int, snippet :str, content :str):
 
 def applyResponse(response :Response, content :str):
     pass
+
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
