@@ -16,7 +16,7 @@ class Response(BaseModel):
     issues  :list[Issue]
 
 def getLLMResponse(content :str):
-    prompt = f'''
+    prompt = '''
         You are a careful Python code reviewer. Review the supplied Python source
         code and produce actionable findings.
 
@@ -87,7 +87,8 @@ def validateResponse(response :Response):
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
-    path = Path(os.getcwd, "python-file", "correct_sample")
-    with open(path, "r") as file:
+    path = Path(os.getcwd(), "python-files", "incorrect_sample.py")
+    with open(str(path), "r") as file:
         content = path.read_text()
-        response = getLLMResponse(content)
+    response = getLLMResponse(content)
+    print(response)
