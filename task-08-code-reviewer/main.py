@@ -12,6 +12,7 @@ class Issue(BaseModel):
     line :int
     line_approximate :bool
     suggestion :str
+    suggested_code :str
 
 class Response(BaseModel):
     issues  :list[Issue]
@@ -55,6 +56,23 @@ def getLLMResponse(content :str):
         - Set line_approximate to true for every finding because model-generated
         references have not been independently verified by the application.
 
+        Suggested code:
+        - suggestion explains the correction in words. suggested_code contains
+        the actual Python code proposed for the user to review.
+        - Treat suggested_code as the complete replacement for the single source
+        line identified by line and code_snippet. It may contain multiple lines
+        when that source line needs to be replaced with a block of code.
+        - To add code before or after the targeted line, include the original
+        line unchanged alongside the new lines in the intended order. Replacing
+        the targeted line with this block must preserve the original line.
+        - Preserve the indentation required by the surrounding code, correcting
+        indentation when that is the reported issue.
+        - Propose the smallest relevant change. Do not return the entire file
+        or claim that this replacement changes other occurrences elsewhere.
+        - Include only Python code in suggested_code, without Markdown fences,
+        diff markers, line-number labels, explanations, or placeholder text.
+        - Use valid JSON escaping for quotes and line breaks inside strings.
+
         Return only valid JSON with this structure:
         {
         "issues": [
@@ -63,7 +81,8 @@ def getLLMResponse(content :str):
             "code_snippet": "exact original source line copied here",
             "line": 1,
             "line_approximate": true,
-            "suggestion": "A specific, actionable correction"
+            "suggestion": "A specific, actionable correction",
+            "suggested_code": "actual replacement Python code with appropriate indentation"
             }
         ]
         }
@@ -71,9 +90,10 @@ def getLLMResponse(content :str):
         Output rules:
         - The example above describes the format; do not repeat its placeholder finding.
         - Every entry must contain issue, code_snippet, line, line_approximate,
-        and suggestion.
+        suggestion, and suggested_code.
         - code_snippet must be a non-empty string copied exactly from the source.
         - issue and suggestion must be non-empty strings containing useful details.
+        - suggested_code must be a non-empty string and differ from code_snippet.
         - Prefix issue with "Bug:", "PEP 8:", or "Refactor:".
         - line must be a positive integer.
         - line_approximate must be a boolean.
@@ -86,7 +106,8 @@ def getLLMResponse(content :str):
         model='gpt-4o',
         response_format=Response
     ).choices[0].message.parsed
-    return validateResponse(response, content)
+    response = validateResponse(response, content)
+    new_content = applyResponse(content, response)
 
 def validateResponse(response :Response, content :str):
     validated_issues = []
@@ -108,6 +129,9 @@ def validateLineAndSnippt(line :int, snippet :str, content :str):
     elif snippet != lines[line - 1]:
         return False
     return True
+
+def applyResponse(response :Response, content :str):
+    pass
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
