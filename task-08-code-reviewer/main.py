@@ -13,7 +13,7 @@ class Issue(BaseModel):
     suggestion :str
 
 class Response(BaseModel):
-    issues = list[Issue]
+    issues  :list[Issue]
 
 def getLLMResponse(content :str):
     prompt = f'''
@@ -79,7 +79,11 @@ def getLLMResponse(content :str):
     return validateResponse(response)
 
 def validateResponse(response :Response):
-    pass
+    return Response(issues = [
+        issue for issue in response.issues if issue.issue.strip() != ""
+                                                and issue.line > 0
+                                                and issue.suggestion.strip() != ""
+    ])
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
