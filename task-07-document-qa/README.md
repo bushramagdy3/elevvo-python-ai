@@ -137,4 +137,4 @@ Ask anything: Exit
 
 The recording demonstrates the project running in both the command-line and Gradio web interfaces. Each interface is used to ask questions relevant to the recipe documents and unrelated questions, showing answers with source filenames and full supporting chunks for relevant questions, and the refusal message for unrelated questions.
 
-`TASK_7_DEMO_URL`
+https://github.com/user-attachments/assets/532b8915-1498-4e58-9923-d822918d4835
