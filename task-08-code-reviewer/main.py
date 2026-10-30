@@ -70,10 +70,16 @@ def getLLMResponse(content :str):
         - If no actionable issues are found, return {"issues": []}.
         - Include no additional fields, Markdown code fences, or text outside the JSON.
         - Suggestions are recommendations for human review only.
-
-        code to review:
-        {content}
     '''
+    response = client.chat.completions.parse(
+        messages=[{"role":"system", "content":prompt}, {"role":"user", content: content}],
+        model='gpt-4o',
+        response_format=Response
+    ).choices[0].message.parsed
+    return validateResponse(response)
+
+def validateResponse(response :Response):
+    pass
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
