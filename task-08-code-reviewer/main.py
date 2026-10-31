@@ -40,8 +40,13 @@ def getLLMResponse(content :str):
         requirements or assume how unavailable code behaves.
         - Explain the specific problem, its consequence, and an actionable fix.
         - If a problem depends on a condition, state that condition.
-        - Report each distinct issue once. Prioritize bugs before style findings
-        and optional refactoring.
+        - Return at most one issue entry per original source line. Every line
+        value in the issues array must be unique, regardless of category or action.
+        - If a line has several problems, combine all of them into one issue
+        description and explain all corrections together in suggestion.
+        suggested_code must address every problem reported for that line at once.
+        - Prioritize entries containing bugs before style findings and optional
+        refactoring. Do not omit problems when combining findings on the same line.
         - Do not invent findings merely to cover every review category.
 
         Line references:
@@ -72,6 +77,13 @@ def getLLMResponse(content :str):
         - For "add_after_line", suggested_code contains only the new code to
         insert immediately after the targeted line. Keep the target unchanged
         and do not include it in suggested_code.
+        - Combine edits targeting the same original line into one action. For
+        several replacements, return the complete final corrected line or block,
+        including all fixes, rather than separate partial corrections.
+        - If combined edits require both replacement and insertion, or additions
+        on both sides of a line, use "replace_line" with one complete block in
+        the intended order. Include the corrected target line, or preserve it
+        unchanged if only surrounding additions are needed.
         - For every action, line and code_snippet refer to the original source
         before any edits. Do not adjust line numbers for other suggested edits.
         - Preserve the indentation required by the surrounding code, correcting
@@ -106,8 +118,12 @@ def getLLMResponse(content :str):
         - suggested_code must be a non-empty string. For "replace_line", it
         must differ from code_snippet.
         - action_type must be "replace_line", "add_before_line", or "add_after_line".
-        - Prefix issue with "Bug:", "PEP 8:", or "Refactor:".
-        - line must be a positive integer.
+        - Prefix issue with "Bug:", "PEP 8:", or "Refactor:". For combined
+        findings, choose the highest-priority category: Bug, then PEP 8, then
+        Refactor. Still describe every problem affecting that line.
+        - line must be a positive integer unique across the entire issues array.
+        - Before returning, merge any entries sharing a line into one complete
+        entry. Never assign an incorrect line number to avoid a duplicate.
         - line_approximate must be a boolean.
         - If no actionable issues are found, return {"issues": []}.
         - Include no additional fields, Markdown code fences, or text outside the JSON.
@@ -123,14 +139,18 @@ def getLLMResponse(content :str):
 
 def validateResponse(response :Response, content :str):
     validated_issues = []
+    seen_lines = set()
 
     for issue in response.issues:
+        if issue.line in seen_lines:
+            continue
         if validateLineAndSnippt(issue.line, issue.code_snippet, content):
             issue.line_approximate = False
         else:
             issue.line_approximate = True
-        if issue.line > 0 and issue.issue.strip() != "" and issue.suggestion.strip() != "" and issue.code_snippet.strip() != "":
+        if issue.line > 0 and issue.issue.strip() != "" and issue.suggestion.strip() != "" and issue.code_snippet.strip() != "" and issue.suggested_code.strip() != "":
             validated_issues.append(issue)
+            seen_lines.add(issue.line)
     
     return Response(issues = validated_issues)
 
