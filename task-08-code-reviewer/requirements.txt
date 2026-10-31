@@ -1,3 +1,3 @@
-# Dependency placeholder for Task 8: AI-Assisted Code Review Tool.
-# No runtime dependencies have been selected.
-# Add actual dependencies when implementation begins.
+openai==3.41.0
+pydantic==2.14.2
+python-dotenv==1.2.4

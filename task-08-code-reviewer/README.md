@@ -2,25 +2,36 @@
 
 **Level:** Industry Level
 
-**Status:** Planned
+**Status:** Complete
 
-Planned tool for producing structured AI-assisted reviews of supplied code. The current interface is a command-line placeholder that reports the project is planned; application behaviour has not been implemented.
+A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI displays the findings, a before/after diff, and the proposed code, with explicit approval required before saving changes.
 
 ## Requirements coverage
 
-The official task PDF is not included in this repository. The requirements mapping needs verification against that document before implementation or completion claims can be made.
-
 | Required feature | Implementation | Status |
 | --- | --- | --- |
-| Official task requirements — mapping needs verification | No project implementation; [main.py](main.py) only reports the planning status. | Not implemented |
+| Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) reads the selected file and sends its source to `gpt-4o` with a structured review prompt. | Complete |
+| Parse the response into a structured report with issue, line, and suggestion fields | Pydantic `Issue` and `Response` models define the report, including the original snippet, suggested code, action type, and approximate-line flag. | Complete |
+| Validate required fields and reject entries with invalid or empty values | Pydantic validates required fields and their types. `validateResponse()` rejects nonpositive line numbers and blank descriptions, suggestions, source snippets, or suggested code. | Complete |
+| Mark line references as approximate when they cannot be verified against the file | `validateLineAndSnippt()` compares the snippet with the reported source line, ignoring surrounding whitespace. Unverified findings are marked approximate and excluded from proposed edits. | Complete |
+| Review and report suggestions without automatically executing or applying generated changes | The program displays its report and preview without executing the reviewed code. The input file is overwritten only after the user explicitly enters `Y`. | Complete |
 
 ## Bonuses and additional features
 
-Official bonuses have not been verified because the task PDF is unavailable; none are implemented. No additional features are implemented.
+**Official bonus — Before/after diff with manual acceptance or rejection: Complete.** The CLI marks original lines with `-` and suggested lines with `+`, displays the proposed file contents, and asks whether to save the changes. Entering `Y` accepts the proposed edits; any other response leaves the file unchanged.
+
+Additional features:
+
+- Duplicate line references are filtered so the first valid issue for each line is retained.
+- Replacement edits preserve the original line's indentation and use the first line of suggested code.
+- Insertion actions support adding multiple lines before or after a targeted line.
+- [python-files/incorrect_sample.py](python-files/incorrect_sample.py) and [python-files/correct_sample.py](python-files/correct_sample.py) provide sample review inputs.
 
 ## Setup
 
-A working Python 3 installation is needed to run the placeholder. No Python version has been tested for this project yet. Run the following from the repository root.
+Use Python 3.14. Local verification used Python 3.14.6. An OpenAI API key and access to the configured `gpt-4o` model are required. API requests require an internet connection and are subject to account limits and usage charges.
+
+Run the following from the repository root.
 
 Windows PowerShell:
 
@@ -28,7 +39,6 @@ Windows PowerShell:
 cd task-08-code-reviewer
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
 ```
 
 macOS/Linux:
@@ -37,10 +47,27 @@ macOS/Linux:
 cd task-08-code-reviewer
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+Install the runtime dependencies from [requirements.txt](requirements.txt) in the active virtual environment:
+
+```sh
 python -m pip install -r requirements.txt
 ```
 
-[requirements.txt](requirements.txt) contains comments only and installs no project dependencies. Application configuration, environment variable names, and external services have not been selected. Add a `.env.example` with placeholders when environment variables are introduced.
+### API configuration
+
+Create a `.env` file beside `main.py`, using [.env.example](.env.example) as a template:
+
+```dotenv
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+| Setting | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | Authenticates code-review requests to the OpenAI API. |
+
+The application reads this file with `python-dotenv`. Start the script from `task-08-code-reviewer` so the configuration file is found. Local `.env` files are excluded from version control. The selected source file is sent to the OpenAI API for review.
 
 ## Usage
 
@@ -50,42 +77,29 @@ From the task directory with the virtual environment active:
 python main.py
 ```
 
-Expected placeholder output:
+Enter the path of the Python file when prompted, for example `python-files/incorrect_sample.py`. You can enter an absolute path or a path relative to the current task directory.
+
+The CLI displays `Issues`, the `Before and after diff`, and the proposed `New Code`. Approximate findings remain in the report but are skipped when building the proposed edits.
+
+Illustrative output after entering the path of a one-line file containing `total=0`; generated findings and suggested wording can vary:
 
 ```text
-Task 8 — AI-Assisted Code Review Tool is planned. Implementation is not available yet.
+Issues:
+[Issue(issue='PEP 8: Missing spaces around the assignment operator.', code_snippet='total=0', line=1, line_approximate=False, suggestion='Add spaces around the assignment operator.', suggested_code='total = 0', action_type='replace_line')]
+Before and after diff:
+- total=0
++ total = 0
+New Code:
+total = 0
+Would you like to apply these changes? (Y/N) N
 ```
 
-The placeholder exits with status 1 to indicate that the application is unavailable. It accepts no input; a complete application interaction will be documented after implementation.
+Enter `Y` to overwrite the selected input file with the proposed code. The choice ignores letter case and surrounding whitespace. Enter `N`, or any other response, to keep the original file. The reviewed code is never executed by the tool.
 
 ## Demo
 
-Demo not recorded yet
+The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-Recording checklist for a roughly 60–90 second demo after implementation:
+Demo video: `TASK_8_DEMO_URL`
 
-- Produce a structured review of a deliberately buggy sample file.
-- Show a clear response when the input file is missing.
-- Include an implemented bonus if available, using safe sample data without credentials.
-
-## Tests and evaluation
-
-No project tests or test command are available yet. No project test results are claimed. Add tests under `tests/` when implementation begins; the usage command above only invokes the placeholder.
-
-Planned checks from the [repository guide](../README_GUIDE.md):
-
-- A deliberately buggy sample receives a structured review.
-- A missing input file receives a clear response.
-- Malformed model output is rejected or handled by report validation.
-
-Planned evaluation cases; these are targets, not observed results. Neither mocked model/API tests nor live integration checks have been run.
-
-| Input | Expected behaviour | Observed result | Pass/fail |
-| --- | --- | --- | --- |
-| Deliberately buggy sample code | Produce a structured review with approximate line references | Not evaluated | Not run |
-| Missing input file | Provide a clear failure response | Not evaluated | Not run |
-| Malformed model response | Handle invalid output through report validation | Not evaluated | Not run |
-
-## Design decisions and limitations
-
-Input handling, model integration, report validation, and approximate line references are not implemented. Supported languages, model choice, network requirements, costs, and input limits remain undecided. The intended review workflow will present suggestions for human review without automatically executing or applying them.
+**Limitation:** AI suggestions may be incomplete or incorrect, especially renames and refactors involving several lines. Review the diff before accepting; the proposed code is not executed or checked for correctness.

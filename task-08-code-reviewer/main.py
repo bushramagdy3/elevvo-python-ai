@@ -233,8 +233,8 @@ def applyResponse(response :Response, content :str):
     return "\n".join(before_and_after), "\n".join(new_content), response
 
 if __name__ == "__main__":
-    # path = input("Write the path of the Python file")
-    path = Path(os.getcwd(), "python-files", "incorrect_sample.py")
+    path = input("Write the path of the Python file")
+    path = Path(path)
     with open(str(path), "r") as file:
         content = path.read_text()
     before_and_after, new_content, response = getLLMResponse(content)
