@@ -63,7 +63,7 @@ https://github.com/user-attachments/assets/c08f2b9e-1b1e-4eb0-9ecb-901c850abe44
 
 The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-Demo video: `TASK_8_DEMO_URL`
+https://github.com/user-attachments/assets/9d99fe3a-887d-470e-9192-e9c6b26581f8
 
 ## Author
 
