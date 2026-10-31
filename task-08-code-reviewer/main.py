@@ -119,8 +119,7 @@ def getLLMResponse(content :str):
         response_format=Response
     ).choices[0].message.parsed
     response = validateResponse(response, content)
-    result = applyResponse(content, response)
-    return result
+    return applyResponse(response, content)
 
 def validateResponse(response :Response, content :str):
     validated_issues = []
@@ -144,8 +143,38 @@ def validateLineAndSnippt(line :int, snippet :str, content :str):
     return True
 
 def applyResponse(response :Response, content :str):
-    pass
+    before_and_after = content.splitlines()
+    new_content = content.splitlines()
+    issues = sorted(response.issues, key = lambda item : item.line)
 
+    new_content_shift = 0
+    before_and_after_shift = 0
+    for issue in issues:
+        new_content_index = issue.line - 1 + new_content_shift
+        before_and_after_index = issue.line - 1 + before_and_after_shift
+        code = issue.suggested_code
+        action = issue.action_type
+
+        if issue.line_approximate:
+            continue
+        
+        if action == "replace_line":
+            before_and_after[before_and_after_index] = f"- {before_and_after[before_and_after_index]}"
+            before_and_after.insert(before_and_after_index + 1, f"+ {code}")
+            new_content[new_content_index] = code
+            before_and_after_shift += 1
+        elif action == "add_before_line":
+            before_and_after.insert(before_and_after_index, f"+ {code}")
+            new_content.insert(new_content_index, code)
+            new_content_shift += 1
+            before_and_after_shift += 1
+        else:
+            before_and_after.insert(before_and_after_index + 1, f"+ {code}")
+            new_content.insert(new_content_index + 1, code)
+            new_content_shift += 1
+            before_and_after_shift += 1
+
+    return before_and_after, new_content
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
