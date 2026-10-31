@@ -100,6 +100,6 @@ Enter `Y` to overwrite the selected input file with the proposed code. The choic
 
 The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-Demo video: `TASK_8_DEMO_URL`
+https://github.com/user-attachments/assets/e0c0f3dc-3ee1-4596-981e-e433cf13414c
 
 **Limitation:** AI suggestions may be incomplete or incorrect, especially renames and refactors involving several lines. Review the diff before accepting; the proposed code is not executed or checked for correctness.
