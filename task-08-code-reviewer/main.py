@@ -45,6 +45,8 @@ def getLLMResponse(content :str):
         - If a line has several problems, combine all of them into one issue
         description and explain all corrections together in suggestion.
         suggested_code must address every problem reported for that line at once.
+        - Problems on different original lines need separate issue entries.
+        Never include corrections for neighboring lines in the same replacement.
         - Prioritize entries containing bugs before style findings and optional
         refactoring. Do not omit problems when combining findings on the same line.
         - Do not invent findings merely to cover every review category.
@@ -53,12 +55,20 @@ def getLLMResponse(content :str):
         - Count lines from the original source starting at 1, including every
         blank line and comment. Do not skip or renumber any lines.
         - Reference the line containing the code responsible for the finding.
-        For a finding spanning several lines, use the first relevant line.
+        If several existing lines need correction, report each line separately.
         - In code_snippet, copy the entire original source line referenced by
-        line exactly, preserving indentation, whitespace, and punctuation.
-        Do not include a line-number label, Markdown fences, or a proposed fix.
-        For a finding spanning several lines, copy only the first relevant line.
-        - Check each reference against the supplied source before returning it.
+        line character for character, excluding only its line-ending character(s).
+        Preserve EVERY leading space, tab, internal space, and trailing space.
+        Do not trim, strip, dedent, reformat, or convert tabs to spaces.
+        - Even if the original indentation is incorrect, preserve it exactly in
+        code_snippet. Put corrected indentation only in suggested_code.
+        - Example: if the original line is "  total=0" with two leading spaces,
+        code_snippet must be "  total=0", never "total=0" or "    total=0".
+        - Do not include a line-number label, Markdown fences, or a proposed fix
+        in code_snippet.
+        code_snippet must contain only that one original line.
+        - Before returning, compare code_snippet with the entire original line
+        at line, including the exact number and kind of indentation characters.
         Never invent an out-of-range line number.
         - Set line_approximate to true for every finding because model-generated
         references have not been independently verified by the application.
@@ -70,7 +80,10 @@ def getLLMResponse(content :str):
         or "add_after_line". Choose the action that matches the proposed edit.
         - For "replace_line", suggested_code is the complete replacement for
         the single original source line identified by line and code_snippet.
-        It may contain multiple lines when replacing that line with a block.
+        Return only that corrected line, without its loop body or any other
+        existing lines. suggested_code must contain exactly one line for this
+        action. For example, correcting a loop header must not include the
+        loop body or the average calculation below it.
         - For "add_before_line", suggested_code contains only the new code to
         insert immediately before the targeted line. Keep the target unchanged
         and do not include it in suggested_code.
@@ -78,12 +91,8 @@ def getLLMResponse(content :str):
         insert immediately after the targeted line. Keep the target unchanged
         and do not include it in suggested_code.
         - Combine edits targeting the same original line into one action. For
-        several replacements, return the complete final corrected line or block,
+        several replacements, return the complete final corrected line,
         including all fixes, rather than separate partial corrections.
-        - If combined edits require both replacement and insertion, or additions
-        on both sides of a line, use "replace_line" with one complete block in
-        the intended order. Include the corrected target line, or preserve it
-        unchanged if only surrounding additions are needed.
         - For every action, line and code_snippet refer to the original source
         before any edits. Do not adjust line numbers for other suggested edits.
         - Preserve the indentation required by the surrounding code, correcting
@@ -158,7 +167,7 @@ def validateLineAndSnippt(line :int, snippet :str, content :str):
     lines = content.splitlines()
     if line <= 0 or line > len(lines):
         return False
-    elif snippet != lines[line - 1]:
+    elif snippet.strip() != lines[line - 1].strip():
         return False
     return True
 
@@ -170,36 +179,52 @@ def applyResponse(response :Response, content :str):
     new_content_shift = 0
     before_and_after_shift = 0
     for issue in issues:
-        new_content_index = issue.line - 1 + new_content_shift
-        before_and_after_index = issue.line - 1 + before_and_after_shift
-        code = issue.suggested_code
-        action = issue.action_type
-
         if issue.line_approximate:
             continue
-        
+
+        new_content_index = issue.line - 1 + new_content_shift
+        before_and_after_index = issue.line - 1 + before_and_after_shift
+        codes = issue.suggested_code.split('\n')
+        action = issue.action_type
+
         if action == "replace_line":
+            original_line = new_content[new_content_index]
+            indentation = original_line[:len(original_line) - len(original_line.lstrip())]
+            code = indentation + codes[0].strip()
             before_and_after[before_and_after_index] = f"- {before_and_after[before_and_after_index]}"
             before_and_after.insert(before_and_after_index + 1, f"+ {code}")
             new_content[new_content_index] = code
             before_and_after_shift += 1
-        elif action == "add_before_line":
-            before_and_after.insert(before_and_after_index, f"+ {code}")
-            new_content.insert(new_content_index, code)
-            new_content_shift += 1
-            before_and_after_shift += 1
         else:
-            before_and_after.insert(before_and_after_index + 1, f"+ {code}")
-            new_content.insert(new_content_index + 1, code)
-            new_content_shift += 1
-            before_and_after_shift += 1
+            for i, code in enumerate(codes):
+                if action == "add_before_line":
+                    before_and_after.insert(before_and_after_index + i, f"+ {code}")
+                    new_content.insert(new_content_index + i, code)
+                    new_content_shift += 1
+                    before_and_after_shift += 1
+                else:
+                    before_and_after.insert(before_and_after_index + i + 1, f"+ {code}")
+                    new_content.insert(new_content_index + i + 1, code)
+                    new_content_shift += 1
+                    before_and_after_shift += 1
 
-    return before_and_after, new_content
+    return "\n".join(before_and_after), "\n".join(new_content), response
 
 if __name__ == "__main__":
     # path = input("Write the path of the Python file")
     path = Path(os.getcwd(), "python-files", "incorrect_sample.py")
     with open(str(path), "r") as file:
         content = path.read_text()
-    response = getLLMResponse(content)
-    print(response)
+    before_and_after, new_content, response = getLLMResponse(content)
+
+    print("Issues:")
+    print(response.issues)
+
+    print("Before and after diff:")
+    print(before_and_after)
+
+    apply_changes = input("Would you like to apply these changes? (Y/N) ")
+    if apply_changes.strip().lower() == 'y':
+        with open(str(path), "w") as file:
+            file.write(new_content) 
+        print("Changes applied successfully!")
