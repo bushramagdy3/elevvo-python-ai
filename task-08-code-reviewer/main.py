@@ -51,6 +51,28 @@ def getLLMResponse(content :str):
         refactoring. Do not omit problems when combining findings on the same line.
         - Do not invent findings merely to cover every review category.
 
+        Consistency across changes:
+        - Treat all suggested edits as one coordinated set of changes to this
+        file. Each individual entry still changes only its targeted line.
+        - When renaming a function, parameter, or variable, include a separate
+        issue entry for EVERY original line requiring that rename: definitions,
+        references, and calls. Use the same new name throughout its scope.
+        - For example, renaming calculateAverage to calculate_average requires
+        changing its definition AND every call to calculateAverage in this file.
+        Renaming its Scores parameter to scores also requires changing every
+        reference to that parameter inside the function body.
+        - Merge these dependent edits with any other corrections already needed
+        on the same line, so each line still appears only once in issues.
+        - Do not propose a rename unless all required edits in the supplied file
+        are included. Do not rename unrelated identifiers in other scopes.
+        - Every correction described in suggestion must actually appear in
+        suggested_code for that line. Do not claim to rename a variable while
+        returning only a spacing change. Do not flag already-valid names as
+        naming violations.
+        - Before returning, review the combined result as text without executing
+        it. Check that renamed definitions and references agree, no old calls or
+        variable references were left behind, and all described fixes are present.
+
         Line references:
         - Count lines from the original source starting at 1, including every
         blank line and comment. Do not skip or renumber any lines.
@@ -222,6 +244,9 @@ if __name__ == "__main__":
 
     print("Before and after diff:")
     print(before_and_after)
+
+    print("New Code:")
+    print(new_content)
 
     apply_changes = input("Would you like to apply these changes? (Y/N) ")
     if apply_changes.strip().lower() == 'y':
