@@ -1,7 +1,7 @@
 from openai import Client
 import dotenv
 import json
-import os
+import sys
 from pydantic import BaseModel
 from pathlib import Path
 from difflib import unified_diff
@@ -247,11 +247,21 @@ def validateLineAndSnippt(line :int, snippet :str, content :str):
     return True
 
 if __name__ == "__main__":
-    # path = input("Write the path of the Python file")
-    path = Path(os.getcwd(), "python-files", "incorrect_sample.py")
-    with open(str(path), "r", encoding="utf-8", newline="") as file:
-        content = file.read()
-    response = getLLMResponse(content)
+    path = input("Write the path of the Python file: ")
+    try:
+        with open(str(path), "r", encoding="utf-8", newline="") as file:
+            content = file.read()
+    except Exception as e:
+        print(e)
+        sys.exit()
+
+    try:
+        response = getLLMResponse(content)
+    except Exception as e:
+        print("Something went wrong while generating LLM response")
+        print(e)
+        sys.exit()
+    
     for i, issue in enumerate(response.issues):
         print(f"{i+1}: {issue.issue}")
         print(f"Code Snippet: {issue.code_snippet}")
@@ -259,8 +269,14 @@ if __name__ == "__main__":
         print(f"Line: {issue.line} {"approximately" if issue.line_approximate else ""}")
         print("-------------------------------------")
 
-    fixed_content = applyFixes(content, response)
-    fixed_content = refineFixedCode(fixed_content)
+    try:
+        fixed_content = applyFixes(content, response)
+        fixed_content = refineFixedCode(fixed_content)
+    except Exception as e:
+        print("Something went wrong while generating LLM response")
+        print(e)
+        sys.exit()
+        
     line_ending = '\r\n' if '\r\n' in content else ('\r' if '\r' in content else '\n')
     fixed_content = fixed_content.replace('\r\n', '\n').replace('\r', '\n')
     fixed_content = fixed_content.replace('\n', line_ending)
