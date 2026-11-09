@@ -4,7 +4,7 @@
 
 **Status:** Complete
 
-A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI lists issues and suggestions, asks the LLM to generate fixed code, displays a diff, and saves changes only when the user accepts them.
+A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI lists issues and suggestions, asks the LLM to generate fixed code, runs another LLM pass for naming consistency and code quality, displays a diff, and saves changes only when the user accepts them.
 
 ## Requirements coverage
 
@@ -84,26 +84,29 @@ Line: 1
 -------------------------------------
 ```
 
-After listing the issues, the CLI generates fixed code, then asks the LLM to produce a readable diff. Enter `y` or `yes` to replace the input file with the fixed content; letter case and surrounding whitespace are ignored. Any other answer leaves the file unchanged. If the fixed content is identical to the original, it prints `No changes to apply.` without requesting a diff, prompting, or writing the file.
+After listing the issues, the CLI generates fixed code and sends it through a second LLM pass to resolve inconsistent names, check PEP 8 style, and make small refactors. Python's `difflib.unified_diff` then compares the final content with the original. Enter `y` or `yes` to replace the input file with that final content; letter case and surrounding whitespace are ignored. Any other answer leaves the file unchanged. If the final content is identical to the original, it prints `No changes to apply.` without prompting or writing the file.
 
 ### Applying fixes from Python
 
 `applyFixes(content, response)` sends the original source and structured review to the LLM and returns the complete corrected source as a string:
 
 ```python
-from main import getLLMResponse, applyFixes, generateDiff
+from main import getLLMResponse, applyFixes, refineFixedCode, generateDiff
 
 response = getLLMResponse(content)
 corrected_content = applyFixes(content, response)
+corrected_content = refineFixedCode(corrected_content)
 print(generateDiff(corrected_content, content))
 ```
 
 The editing prompt requests minimal, coordinated fixes and preservation of indentation and unchanged formatting. Returned whitespace is preserved without trimming. With no reported issues, the function returns the original content without an API call. The function returns a string; the CLI handles displaying the diff and saving accepted changes.
 
-`generateDiff(new_content, old_content)` sends both versions to the LLM and returns its diff labeled `original` and `fixed`, with removed lines prefixed by `-` and added lines by `+`. The prompt requests exact indentation and a little context around each changed block. Identical content returns an empty string without an API call. Missing or blank model output raises an error before the CLI asks to save changes.
+`refineFixedCode(fixed_content)` runs a separate LLM check for partially renamed functions and variables, scope-aware references, PEP 8 naming and formatting, remaining bugs, and small clarity improvements. It returns the complete refined code, which is used for both the diff and the accepted file contents. This pass also runs when the initial review reports no issues, so it can catch missed inconsistencies. Empty or whitespace-only input is returned without an API call; missing or blank model output for nonblank input raises an error before diff generation or saving.
+
+`generateDiff(new_content, old_content)` uses Python's built-in `difflib.unified_diff` to return a diff labeled `original` and `fixed`, with removed lines prefixed by `-`, added lines by `+`, and context around changed blocks. Line endings are normalized for comparison so Windows CRLF versus Unix LF does not mark unchanged lines as replacements. Indentation is preserved, missing final newlines are marked, and content with no other differences returns an empty string. The CLI saves accepted fixes using the original file's line-ending style. Generating the diff requires no API call.
 
 ## Demo
 
 Demo not recorded yet for the current version.
 
-**Limitation:** AI suggestions and the generated diff may be incomplete or incorrect. Line verification checks only the source reference; it does not establish that a finding, suggestion, or diff is correct.
+**Limitation:** AI suggestions and fixes may be incomplete or incorrect. Line verification checks only the source reference; the diff shows the changes but does not establish that the resulting code is correct.
