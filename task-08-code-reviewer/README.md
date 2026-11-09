@@ -4,28 +4,21 @@
 
 **Status:** Complete
 
-A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI displays the findings, a before/after diff, and the proposed code, with explicit approval required before saving changes.
+A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI lists issues and suggestions for human review.
 
 ## Requirements coverage
 
 | Required feature | Implementation | Status |
 | --- | --- | --- |
-| Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) reads the selected file and sends its source to `gpt-4o` with a structured review prompt. | Complete |
-| Parse the response into a structured report with issue, line, and suggestion fields | Pydantic `Issue` and `Response` models define the report, including the original snippet, suggested code, action type, and approximate-line flag. | Complete |
-| Validate required fields and reject entries with invalid or empty values | Pydantic validates required fields and their types. `validateResponse()` rejects nonpositive line numbers and blank descriptions, suggestions, source snippets, or suggested code. | Complete |
-| Mark line references as approximate when they cannot be verified against the file | `validateLineAndSnippt()` compares the snippet with the reported source line, ignoring surrounding whitespace. Unverified findings are marked approximate and excluded from proposed edits. | Complete |
-| Review and report suggestions without automatically executing or applying generated changes | The program displays its report and preview without executing the reviewed code. The input file is overwritten only after the user explicitly enters `Y`. | Complete |
+| Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) reads the bundled `python-files/incorrect_sample.py` and sends its source to `gpt-4o` with a structured review prompt. | Complete |
+| Parse the response into a structured report with issue, line, and suggestion fields | Pydantic `Issue` and `Response` models define the report, including the original snippet and approximate-line flag. | Complete |
+| Validate required fields and reject entries with invalid or empty values | Pydantic validates required fields and their types. `validateResponse()` rejects nonpositive line numbers and blank descriptions, suggestions, or source snippets. | Complete |
+| Mark line references as approximate when they cannot be verified against the file | `validateLineAndSnippt()` compares the snippet with the original source line, including exact indentation and whitespace. Unverified findings are marked approximate. | Complete |
+| Review and report suggestions without automatically executing or applying generated changes | The program prints a structured report. It does not execute the reviewed code or write changes to the input file. | Complete |
 
-## Bonuses and additional features
+## Sample inputs
 
-**Official bonus — Before/after diff with manual acceptance or rejection: Complete.** The CLI marks original lines with `-` and suggested lines with `+`, displays the proposed file contents, and asks whether to save the changes. Entering `Y` accepts the proposed edits; any other response leaves the file unchanged.
-
-Additional features:
-
-- Duplicate line references are filtered so the first valid issue for each line is retained.
-- Replacement edits preserve the original line's indentation and use the first line of suggested code.
-- Insertion actions support adding multiple lines before or after a targeted line.
-- [python-files/incorrect_sample.py](python-files/incorrect_sample.py) and [python-files/correct_sample.py](python-files/correct_sample.py) provide sample review inputs.
+[python-files/incorrect_sample.py](python-files/incorrect_sample.py) and [python-files/correct_sample.py](python-files/correct_sample.py) provide sample review inputs.
 
 ## Setup
 
@@ -67,7 +60,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 | --- | --- |
 | `OPENAI_API_KEY` | Authenticates code-review requests to the OpenAI API. |
 
-The application reads this file with `python-dotenv`. Start the script from `task-08-code-reviewer` so the configuration file is found. Local `.env` files are excluded from version control. The selected source file is sent to the OpenAI API for review.
+The application reads this file with `python-dotenv`. Start the script from `task-08-code-reviewer` so the configuration file is found. Local `.env` files are excluded from version control. The source file is sent to the OpenAI API for review.
 
 ## Usage
 
@@ -77,29 +70,20 @@ From the task directory with the virtual environment active:
 python main.py
 ```
 
-Enter the path of the Python file when prompted, for example `python-files/incorrect_sample.py`. You can enter an absolute path or a path relative to the current task directory.
+The script reviews `python-files/incorrect_sample.py` by default. To review another file, change the `path` assignment in the `__main__` block of [main.py](main.py).
 
-The CLI displays `Issues`, the `Before and after diff`, and the proposed `New Code`. Approximate findings remain in the report but are skipped when building the proposed edits.
+The CLI prints a `Response` containing the issues, original code snippets, line numbers, approximate-line flags, and suggestions. All findings remain in the report, including approximate references.
 
-Illustrative output after entering the path of a one-line file containing `total=0`; generated findings and suggested wording can vary:
+Illustrative output for a one-line file containing `total=0`; generated findings and suggested wording can vary:
 
 ```text
-Issues:
-[Issue(issue='PEP 8: Missing spaces around the assignment operator.', code_snippet='total=0', line=1, line_approximate=False, suggestion='Add spaces around the assignment operator.', suggested_code='total = 0', action_type='replace_line')]
-Before and after diff:
-- total=0
-+ total = 0
-New Code:
-total = 0
-Would you like to apply these changes? (Y/N) N
+issues=[Issue(issue='PEP 8: Missing spaces around the assignment operator.', code_snippet='total=0', line=1, line_approximate=False, suggestion='Add spaces around the assignment operator.')]
 ```
 
-Enter `Y` to overwrite the selected input file with the proposed code. The choice ignores letter case and surrounding whitespace. Enter `N`, or any other response, to keep the original file. The reviewed code is never executed by the tool.
+Review the suggestions and make any desired changes in your editor.
 
 ## Demo
 
-The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
+Demo not recorded yet for the review-only version.
 
-https://github.com/user-attachments/assets/e0c0f3dc-3ee1-4596-981e-e433cf13414c
-
-**Limitation:** AI suggestions may be incomplete or incorrect, especially renames and refactors involving several lines. Review the diff before accepting; the proposed code is not executed or checked for correctness.
+**Limitation:** AI suggestions may be incomplete or incorrect. Line verification checks only the source reference; it does not establish that a finding or suggestion is correct.
