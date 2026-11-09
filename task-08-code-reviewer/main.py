@@ -252,6 +252,7 @@ if __name__ == "__main__":
         with open(str(path), "r", encoding="utf-8", newline="") as file:
             content = file.read()
     except Exception as e:
+        print("Something went wrong trying to read the file")
         print(e)
         sys.exit()
 
@@ -276,7 +277,7 @@ if __name__ == "__main__":
         print("Something went wrong while generating LLM response")
         print(e)
         sys.exit()
-        
+
     line_ending = '\r\n' if '\r\n' in content else ('\r' if '\r' in content else '\n')
     fixed_content = fixed_content.replace('\r\n', '\n').replace('\r', '\n')
     fixed_content = fixed_content.replace('\n', line_ending)
@@ -286,8 +287,12 @@ if __name__ == "__main__":
         print(diff)
         accept_changes = input("Accept these changes and save the file? (Y/N) ")
         if accept_changes.strip().lower() in ("y", "yes"):
-            with open(str(path), "w", encoding="utf-8", newline="") as file:
-                file.write(fixed_content)
+            try:
+                with open(str(path), "w", encoding="utf-8", newline="") as file:
+                    file.write(fixed_content)
+            except Exception as e:
+                print("Something went wrong trying to write the file")
+                sys.exit()
             print(f"Changes saved to {path}.")
         else:
             print("Changes rejected. File unchanged.")
