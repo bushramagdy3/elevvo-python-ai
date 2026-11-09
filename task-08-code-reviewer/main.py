@@ -115,4 +115,9 @@ if __name__ == "__main__":
     with open(str(path), "r") as file:
         content = path.read_text()
     response = getLLMResponse(content)
-    print(response)
+    for i, issue in enumerate(response.issues):
+        print(f"{i+1}: {issue.issue}")
+        print(f"Code Snippet: {issue.code_snippet}")
+        print(f"Suggestion: {issue.suggestion}")
+        print(f"Line: {issue.line} {"approximately" if issue.line_approximate else ""}")
+        print("-------------------------------------")
