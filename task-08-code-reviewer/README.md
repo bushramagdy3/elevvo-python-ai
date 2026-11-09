@@ -72,15 +72,32 @@ python main.py
 
 The script reviews `python-files/incorrect_sample.py` by default. To review another file, change the `path` assignment in the `__main__` block of [main.py](main.py).
 
-The CLI prints a `Response` containing the issues, original code snippets, line numbers, approximate-line flags, and suggestions. All findings remain in the report, including approximate references.
+The CLI lists each issue with its original code snippet, line number, approximate-line flag, and suggestion. All findings remain in the report, including approximate references.
 
 Illustrative output for a one-line file containing `total=0`; generated findings and suggested wording can vary:
 
 ```text
-issues=[Issue(issue='PEP 8: Missing spaces around the assignment operator.', code_snippet='total=0', line=1, line_approximate=False, suggestion='Add spaces around the assignment operator.')]
+1: PEP 8: Missing spaces around the assignment operator.
+Code Snippet: total=0
+Suggestion: Add spaces around the assignment operator.
+Line: 1
+-------------------------------------
 ```
 
 Review the suggestions and make any desired changes in your editor.
+
+### Applying fixes from Python
+
+`applyFixes(content, response)` sends the original source and structured review to the LLM and returns the complete corrected source as a string:
+
+```python
+from main import getLLMResponse, applyFixes
+
+response = getLLMResponse(content)
+corrected_content = applyFixes(content, response)
+```
+
+The editing prompt requests minimal, coordinated fixes and preservation of indentation and unchanged formatting. Returned whitespace is preserved without trimming. With no reported issues, the function returns the original content without an API call. This function does not write to the input file, and the default CLI continues to list issues.
 
 ## Demo
 
