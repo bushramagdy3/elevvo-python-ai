@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/9cd4b424-038e-4440-978a-612c3ba18e96
+
 # Elevvo Python Programming & AI
 
 A collection of Python automation and AI projects developed for the Elevvo Python Programming & AI internship. The four projects cover file organization, weather API integration, document question answering, and AI-assisted code review. Each task folder contains its own source code, documentation, and setup instructions.
@@ -9,7 +13,7 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 | 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | [Play demo](#task-3-demo) |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Complete | [Play Demo](#task-5-demo) |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Complete | [Play Demo](#task-7-demo) |
-| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | Not recorded yet |
+| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | [Play Demo](#task-8-demo) |
 
 
 ## Getting started
@@ -64,7 +68,7 @@ https://github.com/user-attachments/assets/c08f2b9e-1b1e-4eb0-9ecb-901c850abe44
 
 The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-`DEMO_VIDEO_URL_HERE`
+https://github.com/user-attachments/assets/2b5270d3-720e-491c-a673-43b1cb0cc9f4
 
 ## Author
 
