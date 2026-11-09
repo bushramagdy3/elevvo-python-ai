@@ -13,7 +13,7 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 
 The file organizer groups files by extension, handles duplicate names, and supports logging and dry-run previews. The weather dashboard retrieves current conditions for a chosen city, supports Celsius and Fahrenheit, handles request failures, and includes automated tests with mocked API responses.
 
-The document Q&A tool answers questions from five sample recipe documents, cites the retrieved source chunks, and declines questions when no chunk meets its configured relevance threshold. It includes both a command-line interface and a Gradio web interface. The code review tool produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and lists issues with line references and suggestions.
+The document Q&A tool answers questions from five sample recipe documents, cites the retrieved source chunks, and declines questions when no chunk meets its configured relevance threshold. It includes both a command-line interface and a Gradio web interface. The code review tool produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, displays a diff of LLM-generated fixes, and saves changes after user acceptance.
 
 ## Getting started
 
@@ -35,7 +35,7 @@ Run each project from its own task directory. The file organizer uses Python's s
 
 The document Q&A tool uses local SentenceTransformer embeddings, a persistent Chroma vector store, and the OpenAI API for answers. Follow its README to configure `OPENAI_API_KEY`, prepare the sample document index, and launch either the CLI or the Gradio app.
 
-The code review tool uses the OpenAI API, Pydantic report models, and `python-dotenv` configuration. Follow its README to install dependencies from `requirements.txt`, configure `OPENAI_API_KEY`, and review the findings for the bundled Python sample.
+The code review tool uses the OpenAI API, Pydantic report models, and `python-dotenv` configuration. Follow its README to install dependencies from `requirements.txt`, configure `OPENAI_API_KEY`, review the findings and diff for the bundled Python sample, and accept or reject the proposed changes.
 
 ## Documentation and demos
 
@@ -61,7 +61,7 @@ https://github.com/user-attachments/assets/c08f2b9e-1b1e-4eb0-9ecb-901c850abe44
 
 ### Task 8 demo
 
-Demo not recorded yet for the review-only version.
+Demo not recorded yet for the current version.
 
 ## Author
 
