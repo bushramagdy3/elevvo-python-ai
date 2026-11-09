@@ -206,7 +206,7 @@ def refineFixedCode(fixed_content :str) -> str:
     return refined.content
 
 def generateDiff(new_content :str, old_content :str) -> str:
-    """Return a unified diff comparing the original source with the fixed source."""
+
     old_content = old_content.replace('\r\n', '\n').replace('\r', '\n')
     new_content = new_content.replace('\r\n', '\n').replace('\r', '\n')
     if new_content == old_content:
