@@ -9,11 +9,11 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 | 3 | [Automated File Organizer](task-03-file-organizer/) | Level 2 | Complete | [Play demo](#task-3-demo) |
 | 5 | [Weather Dashboard Using a Public REST API](task-05-weather-dashboard/) | Level 3 | Complete | [Play Demo](#task-5-demo) |
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Complete | [Play Demo](#task-7-demo) |
-| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | Not recorded |
+| 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | Not recorded yet |
 
 The file organizer groups files by extension, handles duplicate names, and supports logging and dry-run previews. The weather dashboard retrieves current conditions for a chosen city, supports Celsius and Fahrenheit, handles request failures, and includes automated tests with mocked API responses.
 
-The document Q&A tool answers questions from five sample recipe documents, cites the retrieved source chunks, and declines questions when no chunk meets its configured relevance threshold. It includes both a command-line interface and a Gradio web interface. The code review tool produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, displays a diff of LLM-generated fixes, and saves changes after user acceptance.
+The document Q&A tool answers questions from five sample recipe documents, cites the retrieved source chunks, and declines questions when no chunk meets its configured relevance threshold. It includes both a command-line interface and a Gradio web interface. The code review tool lists structured findings, generates fixes, runs another LLM pass for naming consistency and code quality, displays a local Python diff, and saves changes after user acceptance.
 
 ## Getting started
 
@@ -61,7 +61,9 @@ https://github.com/user-attachments/assets/c08f2b9e-1b1e-4eb0-9ecb-901c850abe44
 
 ### Task 8 demo
 
-Demo not recorded yet for the current version.
+The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
+
+`DEMO_VIDEO_URL_HERE`
 
 ## Author
 

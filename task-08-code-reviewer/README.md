@@ -8,6 +8,8 @@ A command-line tool that reviews an existing Python file using the OpenAI API. I
 
 ## Requirements coverage
 
+The official task PDF is not included in this repository. The table describes implemented behavior; its mapping to the official requirements needs verification against that document.
+
 | Required feature | Implementation | Status |
 | --- | --- | --- |
 | Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) reads the bundled `python-files/incorrect_sample.py` and sends its source to `gpt-4o` with a structured review prompt. | Complete |
@@ -16,9 +18,14 @@ A command-line tool that reviews an existing Python file using the OpenAI API. I
 | Mark line references as approximate when they cannot be verified against the file | `validateLineAndSnippt()` compares the snippet with the original source line, including exact indentation and whitespace. Unverified findings are marked approximate. | Complete |
 | Review and report suggestions without automatically executing or applying generated changes | The program lists findings and displays a diff. It writes fixed content to the input file only after the user explicitly accepts the changes, and never executes the reviewed code. | Complete |
 
-## Sample inputs
+## Bonuses and additional features
 
-[python-files/incorrect_sample.py](python-files/incorrect_sample.py) and [python-files/correct_sample.py](python-files/correct_sample.py) provide sample review inputs.
+- **Before/after diff with manual acceptance or rejection:** Displays the exact text changes using Python's `difflib.unified_diff` and asks before overwriting the source file.
+- **LLM-generated fixes:** Applies the review suggestions to the complete source, including coordinated changes across multiple lines.
+- **Naming and quality refinement:** Runs another LLM pass to resolve partial renames, check PEP 8 naming and formatting, and make small refactors.
+- **Whitespace handling:** Preserves returned indentation, normalizes line endings for comparison, marks missing final newlines, and uses the original file's detected line-ending style when saving.
+
+These additions are implemented. Their classification as official bonuses needs verification against the task PDF.
 
 ## Setup
 
@@ -60,7 +67,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 | --- | --- |
 | `OPENAI_API_KEY` | Authenticates code-review requests to the OpenAI API. |
 
-The application reads this file with `python-dotenv`. Start the script from `task-08-code-reviewer` so the configuration file is found. Local `.env` files are excluded from version control. The source file is sent to the OpenAI API for review.
+The application reads this file with `python-dotenv`. Start the script from `task-08-code-reviewer` so the configuration file is found. Local `.env` files are excluded from version control. The source, review report, and proposed fixes are sent to the OpenAI API during the relevant processing steps.
 
 ## Usage
 
@@ -72,9 +79,18 @@ python main.py
 
 The script reviews `python-files/incorrect_sample.py` by default. To review another file, change the `path` assignment in the `__main__` block of [main.py](main.py).
 
-The CLI lists each issue with its original code snippet, line number, approximate-line flag, and suggestion. All findings remain in the report, including approximate references.
+[python-files/incorrect_sample.py](python-files/incorrect_sample.py) contains deliberate bugs and style issues. [python-files/correct_sample.py](python-files/correct_sample.py) provides a working example, including explicit handling of empty input.
 
-Illustrative output for a one-line file containing `total=0`; generated findings and suggested wording can vary:
+The program:
+
+1. Reads the file as UTF-8 and requests a structured review.
+2. Lists validated issues with their source snippets, line numbers, approximate-reference labels, and suggestions. A snippet must match its source line exactly, including indentation, to receive a verified reference.
+3. Sends the source and report to `applyFixes()` to generate corrected code.
+4. Sends that code to `refineFixedCode()` for another check of names, references, style, and remaining bugs.
+5. Compares the final code with the original using a local Python diff.
+6. Asks whether to save the final code to the same file.
+
+Illustrative interaction after setting `path` to a one-line file containing `total=0`; generated findings and fixes can vary:
 
 ```text
 1: PEP 8: Missing spaces around the assignment operator.
@@ -82,9 +98,18 @@ Code Snippet: total=0
 Suggestion: Add spaces around the assignment operator.
 Line: 1
 -------------------------------------
+Proposed changes:
+--- original
++++ fixed
+@@ -1 +1 @@
+-total=0
++total = 0
+
+Accept these changes and save the file? (Y/N) N
+Changes rejected. File unchanged.
 ```
 
-After listing the issues, the CLI generates fixed code and sends it through a second LLM pass to resolve inconsistent names, check PEP 8 style, and make small refactors. Python's `difflib.unified_diff` then compares the final content with the original. Enter `y` or `yes` to replace the input file with that final content; letter case and surrounding whitespace are ignored. Any other answer leaves the file unchanged. If the final content is identical to the original, it prints `No changes to apply.` without prompting or writing the file.
+Enter `y` or `yes` to replace the input file with the final refined content; letter case and surrounding whitespace are ignored. Any other answer leaves the file unchanged. When saving succeeds, the CLI prints `Changes saved to <path>.` If the final content has no differences other than line-ending style, it prints `No changes to apply.` without prompting or writing the file. The reviewed code is never executed by the tool.
 
 ### Applying fixes from Python
 
@@ -107,6 +132,6 @@ The editing prompt requests minimal, coordinated fixes and preservation of inden
 
 ## Demo
 
-Demo not recorded yet for the current version.
+The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-**Limitation:** AI suggestions and fixes may be incomplete or incorrect. Line verification checks only the source reference; the diff shows the changes but does not establish that the resulting code is correct.
+`DEMO_VIDEO_URL_HERE`
