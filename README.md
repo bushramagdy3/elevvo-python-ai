@@ -11,9 +11,6 @@ A collection of Python automation and AI projects developed for the Elevvo Pytho
 | 7 | [LLM-Powered Document Q&A Tool](task-07-document-qa/) | Industry Level | Complete | [Play Demo](#task-7-demo) |
 | 8 | [AI-Assisted Code Review Tool](task-08-code-reviewer/) | Industry Level | Complete | Not recorded yet |
 
-The file organizer groups files by extension, handles duplicate names, and supports logging and dry-run previews. The weather dashboard retrieves current conditions for a chosen city, supports Celsius and Fahrenheit, handles request failures, and includes automated tests with mocked API responses.
-
-The document Q&A tool answers questions from five sample recipe documents, cites the retrieved source chunks, and declines questions when no chunk meets its configured relevance threshold. It includes both a command-line interface and a Gradio web interface. The code review tool lists structured findings, generates fixes, runs another LLM pass for naming consistency and code quality, displays a local Python diff, and saves changes after user acceptance.
 
 ## Getting started
 
@@ -31,11 +28,15 @@ Choose a project and follow its setup instructions:
 - [Task 7: LLM-Powered Document Q&A Tool](task-07-document-qa/README.md#setup)
 - [Task 8: AI-Assisted Code Review Tool](task-08-code-reviewer/README.md#setup)
 
-Run each project from its own task directory. The file organizer uses Python's standard library. The weather dashboard uses `requests` and `python-dotenv`, with `pytest` for its automated tests; its setup instructions explain how to configure a WeatherAPI key in a local `.env` file.
+Run each project from its own task directory. 
+
+The file organizer uses Python's standard library. 
+
+The weather dashboard uses `requests` and `python-dotenv`, with `pytest` for its automated tests; its setup instructions explain how to configure a WeatherAPI key in a local `.env` file.
 
 The document Q&A tool uses local SentenceTransformer embeddings, a persistent Chroma vector store, and the OpenAI API for answers. Follow its README to configure `OPENAI_API_KEY`, prepare the sample document index, and launch either the CLI or the Gradio app.
 
-The code review tool uses the OpenAI API, Pydantic report models, and `python-dotenv` configuration. Follow its README to install dependencies from `requirements.txt`, configure `OPENAI_API_KEY`, review the findings and diff for the bundled Python sample, and accept or reject the proposed changes.
+The code review tool uses the OpenAI API, Pydantic report models, and `python-dotenv` configuration. Follow its README to install dependencies from `requirements.txt`, configure `OPENAI_API_KEY`, enter the Python file's path when prompted, review the findings and diff, and accept or reject the proposed changes.
 
 ## Documentation and demos
 

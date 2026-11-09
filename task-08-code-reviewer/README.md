@@ -4,7 +4,7 @@
 
 **Status:** Complete
 
-A command-line tool that reviews an existing Python file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI lists issues and suggestions, asks the LLM to generate fixed code, runs another LLM pass for naming consistency and code quality, displays a diff, and saves changes only when the user accepts them.
+A command-line tool that prompts for a Python file path and reviews the file using the OpenAI API. It produces structured findings for bugs, PEP 8 compliance, and refactoring, validates the report, and marks unverified line references as approximate. The CLI lists issues and suggestions, asks the LLM to generate fixed code, runs another LLM pass for naming consistency and code quality, displays a diff, and saves changes only when the user accepts them.
 
 ## Requirements coverage
 
@@ -12,7 +12,7 @@ The official task PDF is not included in this repository. The table describes im
 
 | Required feature | Implementation | Status |
 | --- | --- | --- |
-| Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) reads the bundled `python-files/incorrect_sample.py` and sends its source to `gpt-4o` with a structured review prompt. | Complete |
+| Read an existing Python file and request bug detection, PEP 8 review, and refactoring suggestions | [main.py](main.py) prompts for a file path, reads the selected file, and sends its source to `gpt-4o` with a structured review prompt. | Complete |
 | Parse the response into a structured report with issue, line, and suggestion fields | Pydantic `Issue` and `Response` models define the report, including the original snippet and approximate-line flag. | Complete |
 | Validate required fields and reject entries with invalid or empty values | Pydantic validates required fields and their types. `validateResponse()` rejects nonpositive line numbers and blank descriptions, suggestions, or source snippets. | Complete |
 | Mark line references as approximate when they cannot be verified against the file | `validateLineAndSnippt()` compares the snippet with the original source line, including exact indentation and whitespace. Unverified findings are marked approximate. | Complete |
@@ -77,22 +77,29 @@ From the task directory with the virtual environment active:
 python main.py
 ```
 
-The script reviews `python-files/incorrect_sample.py` by default. To review another file, change the `path` assignment in the `__main__` block of [main.py](main.py).
+Enter the Python file's path when prompted, for example:
+
+```text
+Write the path of the Python file: python-files/incorrect_sample.py
+```
+
+You can enter an absolute path or a path relative to the current working directory. Enter the path without surrounding quotes.
 
 [python-files/incorrect_sample.py](python-files/incorrect_sample.py) contains deliberate bugs and style issues. [python-files/correct_sample.py](python-files/correct_sample.py) provides a working example, including explicit handling of empty input.
 
 The program:
 
-1. Reads the file as UTF-8 and requests a structured review.
+1. Prompts for the file path, reads the selected file as UTF-8, and requests a structured review.
 2. Lists validated issues with their source snippets, line numbers, approximate-reference labels, and suggestions. A snippet must match its source line exactly, including indentation, to receive a verified reference.
 3. Sends the source and report to `applyFixes()` to generate corrected code.
 4. Sends that code to `refineFixedCode()` for another check of names, references, style, and remaining bugs.
 5. Compares the final code with the original using a local Python diff.
 6. Asks whether to save the final code to the same file.
 
-Illustrative interaction after setting `path` to a one-line file containing `total=0`; generated findings and fixes can vary:
+Illustrative interaction with a file named `example.py` containing the single line `total=0`; generated findings and fixes can vary:
 
 ```text
+Write the path of the Python file: example.py
 1: PEP 8: Missing spaces around the assignment operator.
 Code Snippet: total=0
 Suggestion: Add spaces around the assignment operator.
