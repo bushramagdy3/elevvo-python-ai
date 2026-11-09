@@ -141,4 +141,4 @@ The editing prompt requests minimal, coordinated fixes and preservation of inden
 
 The recording demonstrates reviewing the supplied sample file, displaying structured findings, inspecting the before/after diff and proposed code, rejecting changes with `N`, and accepting changes with `Y`.
 
-`DEMO_VIDEO_URL_HERE`
+https://github.com/user-attachments/assets/fe743365-22cf-4f8d-aa81-31226e801297
